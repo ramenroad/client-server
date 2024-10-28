@@ -5,6 +5,6 @@ export class RamenyaService {
     constructor(){}
 
     async getRamenyas(){
-        console.log(typeof this.getRamenyas)
+        
     }
 }
