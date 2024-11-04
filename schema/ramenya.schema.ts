@@ -1,8 +1,8 @@
-import { Prop, Schema } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 @Schema({
-  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' },
   versionKey: false,
 })
 export class ramenya extends Document {
@@ -27,25 +27,29 @@ export class ramenya extends Document {
   address: string;
 
   @Prop()
-  contach_number: string;
+  contactNumber: string;
 
   @Prop()
-  instagram_profile: string;
+  instagramProfile: string;
 
   @Prop([
     {
       day: { type: String, required: true },
-      operating_time: { type: String, required: true },
-      break_time: { type: String, required: true },
+      operatingTime: { type: String },
+      breakTime: { type: String },
+      isOpen: { type: Boolean, required: true },
+      _id: false,
     },
   ])
-  business_hours: { day: string; operating_time: string; break_time: string }[];
+  businessHours: { day: string; operatingTime: string; breakTime: string }[];
 
-  @Prop([{ name: String }])
-  recommended_menu: { name: string }[];
+  @Prop([{ name: String, _id: false }])
+  recommendedMenu: { name: string }[];
 
   @Prop({
     required: true,
   })
-  is_selfmade_noodle: boolean;
+  isSelfmadeNoodle: boolean;
 }
+
+export const ramenyaSchema = SchemaFactory.createForClass(ramenya);
