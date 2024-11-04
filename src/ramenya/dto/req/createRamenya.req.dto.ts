@@ -1,0 +1,31 @@
+export class createRamenyaReqDTO {
+  name: string;
+  genre: string;
+  region: string;
+  address: string;
+  contactNumber: string;
+  instagramProfile: string;
+  monOperatingTime?: string;
+  monBreakTime?: string;
+  monIsOpen: boolean;
+  tueOperatingTime?: string;
+  tueBreakTime?: string;
+  tueIsOpen: boolean;
+  wedOperatingTime?: string;
+  wedBreakTime?: string;
+  wedIsOpen: boolean;
+  thuOperatingTime?: string;
+  thuBreakTime?: string;
+  thuIsOpen: boolean;
+  friOperatingTime?: string;
+  friBreakTime?: string;
+  friIsOpen: boolean;
+  satOperatingTime?: string;
+  satBreakTime?: string;
+  satIsOpen: boolean;
+  sunOperatingTime?: string;
+  sunBreakTime?: string;
+  sunIsOpen: boolean;
+  recommendedMenu: string;
+  isSelfmadeNoodle?: boolean;
+}
