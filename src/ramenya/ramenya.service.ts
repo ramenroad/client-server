@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ramenya } from 'schema/ramenya.schema';
 import { createRamenyaReqDTO } from './dto/req/createRamenya.req.dto';
+import { getRamenyasResDTO } from './dto/res/getRamenyas.res.dto';
 
 @Injectable()
 export class RamenyaService {
@@ -10,7 +11,12 @@ export class RamenyaService {
     @InjectModel('ramenya') private readonly ramenyaModel: Model<ramenya>,
   ) {}
 
-  async getRamenyas() {}
+  async getRamenyas(region: string): Promise<getRamenyasResDTO[]> {
+    const query = region ? { region: region } : {};
+    const ramenyas = await this.ramenyaModel.find(query);
+
+    return ramenyas;
+  }
 
   async createRamenya(dto: createRamenyaReqDTO): Promise<void> {
     const recommendedMenu = dto.recommendedMenu.split(',').map((item) => {
