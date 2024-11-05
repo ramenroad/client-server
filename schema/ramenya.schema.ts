@@ -8,6 +8,7 @@ import { Document } from 'mongoose';
 export class ramenya extends Document {
   @Prop({
     required: true,
+    unique: true,
   })
   name: string;
 
@@ -41,7 +42,12 @@ export class ramenya extends Document {
       _id: false,
     },
   ])
-  businessHours: { day: string; operatingTime: string; breakTime: string }[];
+  businessHours: {
+    day: string;
+    operatingTime: string;
+    breakTime: string;
+    isOpen: boolean;
+  }[];
 
   @Prop([{ name: String, _id: false }])
   recommendedMenu: { name: string }[];
