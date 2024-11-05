@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { ramenya } from 'schema/ramenya.schema';
 import { createRamenyaReqDTO } from './dto/req/createRamenya.req.dto';
 import { getRamenyasResDTO } from './dto/res/getRamenyas.res.dto';
+import { getRamenyaByIdResDTO } from './dto/res/getRamenyaById.res.dto';
 
 @Injectable()
 export class RamenyaService {
@@ -16,6 +17,16 @@ export class RamenyaService {
     const ramenyas = await this.ramenyaModel.find(query);
 
     return ramenyas;
+  }
+
+  async getRamenyaById(id: string): Promise<getRamenyaByIdResDTO> {
+    const ramenya = await this.ramenyaModel.findById(id);
+
+    if (!ramenya) {
+      throw new HttpException('Ramenya not found', HttpStatus.NOT_FOUND);
+    }
+
+    return ramenya;
   }
 
   async createRamenya(dto: createRamenyaReqDTO): Promise<void> {
