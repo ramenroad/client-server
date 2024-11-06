@@ -12,7 +12,7 @@ export class RamenyaService {
     @InjectModel('ramenya') private readonly ramenyaModel: Model<ramenya>,
   ) {}
 
-  async getRamenyas(region: string): Promise<getRamenyasResDTO[]> {
+  async getRamenyas(region?: string): Promise<getRamenyasResDTO[]> {
     const query = region ? { region: region } : {};
     const ramenyas = await this.ramenyaModel.find(query);
 

@@ -44,8 +44,8 @@ export class ramenya extends Document {
   ])
   businessHours: {
     day: string;
-    operatingTime: string;
-    breakTime: string;
+    operatingTime?: string;
+    breakTime?: string;
     isOpen: boolean;
   }[];
 
