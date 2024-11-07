@@ -5,6 +5,7 @@ import { ramenya } from 'schema/ramenya.schema';
 import { createRamenyaReqDTO } from './dto/req/createRamenya.req.dto';
 import { getRamenyasResDTO } from './dto/res/getRamenyas.res.dto';
 import { getRamenyaByIdResDTO } from './dto/res/getRamenyaById.res.dto';
+import axios from 'axios';
 
 @Injectable()
 export class RamenyaService {
@@ -34,12 +35,29 @@ export class RamenyaService {
       return { name: item };
     });
 
+    const result = await axios({
+      url: `https://api.vworld.kr/req/address`,
+      method: 'GET',
+      params: {
+        service: 'address',
+        request: 'getCoord',
+        address: dto.address,
+        key: process.env.DIGITAL_TWIN_KEY_DEV,
+        type: 'ROAD',
+      },
+    });
+
+    const latitude = result.data.response.result.point.y;
+    const longitude = result.data.response.result.point.x;
+
     try {
       await this.ramenyaModel.create({
         name: dto.name,
         genre: dto.genre,
         region: dto.region,
         address: dto.address,
+        latitude: latitude,
+        longitude: longitude,
         contactNumber: dto.contactNumber,
         instagramProfile: dto.instagramProfile,
         businessHours: [

@@ -27,6 +27,16 @@ export class ramenya extends Document {
   })
   address: string;
 
+  @Prop({
+    required: true,
+  })
+  latitude: number;
+
+  @Prop({
+    required: true,
+  })
+  longitude: number;
+
   @Prop()
   contactNumber: string;
 

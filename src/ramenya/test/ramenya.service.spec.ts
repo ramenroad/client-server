@@ -35,12 +35,14 @@ describe('RamenyaService', () => {
   describe('getRamenyas', () => {
     const ramenyasData = [
       {
-        _id: '672839749870835f19507225',
+        _id: '672c9f0a0629a34b3bbc9fe7',
         name: '부타노맥스',
         genre: '돈코츠',
         region: '강남구',
         address:
           '서울 강남구 학동로 338 강남파라곤 상가(S동) 로비층(L층) 110호',
+        latitude: 37.516457676,
+        longitude: 127.040705402,
         instagramProfile: 'https://www.instagram.com/butanomax',
         businessHours: [
           {
@@ -95,8 +97,8 @@ describe('RamenyaService', () => {
           },
         ],
         isSelfmadeNoodle: true,
-        createdAt: '2024-11-04T03:03:16.450Z',
-        updatedAt: '2024-11-04T03:03:16.450Z',
+        createdAt: '2024-11-07T11:05:46.414Z',
+        updatedAt: '2024-11-07T11:05:46.414Z',
       },
     ];
     it('should have getRamenyas method', () => {
@@ -123,11 +125,13 @@ describe('RamenyaService', () => {
 
   describe('getRamenyaById', () => {
     const ramenyaData = {
-      _id: '672839749870835f19507225',
+      _id: '672c9f0a0629a34b3bbc9fe7',
       name: '부타노맥스',
       genre: '돈코츠',
       region: '강남구',
       address: '서울 강남구 학동로 338 강남파라곤 상가(S동) 로비층(L층) 110호',
+      latitude: 37.516457676,
+      longitude: 127.040705402,
       instagramProfile: 'https://www.instagram.com/butanomax',
       businessHours: [
         {
@@ -182,8 +186,8 @@ describe('RamenyaService', () => {
         },
       ],
       isSelfmadeNoodle: true,
-      createdAt: '2024-11-04T03:03:16.450Z',
-      updatedAt: '2024-11-04T03:03:16.450Z',
+      createdAt: '2024-11-07T11:05:46.414Z',
+      updatedAt: '2024-11-07T11:05:46.414Z',
     };
     it('should have getRamenyaById method', () => {
       expect(typeof service.getRamenyaById).toBe('function');

@@ -7,6 +7,10 @@ export class getRamenyaByIdResDTO {
 
   address: string;
 
+  latitude: number;
+
+  longitude: number;
+
   contactNumber?: string;
 
   instagramProfile?: string;
