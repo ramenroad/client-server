@@ -17,9 +17,4 @@ export class RamenyaController {
   getRamenyaById(@Param('id') id: string): Promise<getRamenyaByIdResDTO> {
     return this.ramenyaService.getRamenyaById(id);
   }
-
-  @Post('')
-  createRamenya(@Body() dto: createRamenyaReqDTO): Promise<void> {
-    return this.ramenyaService.createRamenya(dto);
-  }
 }
