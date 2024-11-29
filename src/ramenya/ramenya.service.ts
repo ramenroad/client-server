@@ -1,11 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { ramenya } from 'schema/ramenya.schema';
-import { createRamenyaReqDTO } from './dto/req/createRamenya.req.dto';
 import { getRamenyasResDTO } from './dto/res/getRamenyas.res.dto';
 import { getRamenyaByIdResDTO } from './dto/res/getRamenyaById.res.dto';
-import axios from 'axios';
+import { ramenya } from 'schema/ramenya.schema';
 
 @Injectable()
 export class RamenyaService {
@@ -15,8 +13,11 @@ export class RamenyaService {
 
   async getRamenyas(region?: string): Promise<getRamenyasResDTO[]> {
     const query = region ? { region: region } : {};
-    const ramenyas = await this.ramenyaModel.find(query);
+    const ramenyas = await this.ramenyaModel
+      .find(query)
+      .select('name genre region address businessHours');
 
+    console.log(ramenyas);
     return ramenyas;
   }
 
