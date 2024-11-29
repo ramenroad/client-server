@@ -1,7 +1,7 @@
 export class getRamenyaByIdResDTO {
   name: string;
 
-  genre: string;
+  genre: string[];
 
   region: string;
 
