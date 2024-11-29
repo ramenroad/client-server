@@ -15,7 +15,7 @@ export class ramenya extends Document {
   @Prop({
     required: true,
   })
-  genre: string;
+  genre: string[];
 
   @Prop({
     required: true,
@@ -59,8 +59,18 @@ export class ramenya extends Document {
     isOpen: boolean;
   }[];
 
-  @Prop([{ name: String, _id: false }])
-  recommendedMenu: { name: string }[];
+  @Prop([{ name: String, price: Number, _id: false }])
+  recommendedMenu: { name: string; price: number }[];
+
+  @Prop({
+    required: true,
+    type: {
+      oneLineReview: { type: String, required: true },
+      description: { type: String, required: true },
+    },
+    _id: false,
+  })
+  ramenroadReview: { oneLineReview: string; description: string };
 
   @Prop({
     required: true,

@@ -1,6 +1,5 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { RamenyaService } from './ramenya.service';
-import { createRamenyaReqDTO } from './dto/req/createRamenya.req.dto';
 import { getRamenyasResDTO } from './dto/res/getRamenyas.res.dto';
 import { getRamenyaByIdResDTO } from './dto/res/getRamenyaById.res.dto';
 
