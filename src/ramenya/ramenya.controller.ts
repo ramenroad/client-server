@@ -3,7 +3,7 @@ import { RamenyaService } from './ramenya.service';
 import { getRamenyasResDTO } from './dto/res/getRamenyas.res.dto';
 import { getRamenyaByIdResDTO } from './dto/res/getRamenyaById.res.dto';
 
-@Controller('ramenya')
+@Controller({ path: 'ramenya', version: '1' })
 export class RamenyaController {
   constructor(private readonly ramenyaService: RamenyaService) {}
 
