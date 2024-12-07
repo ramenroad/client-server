@@ -17,17 +17,33 @@ export class RamenyaService {
       .find(query)
       .select('name genre region address businessHours');
 
-    console.log(ramenyas);
     return ramenyas;
   }
 
   async getRamenyaById(id: string): Promise<getRamenyaByIdResDTO> {
-    const ramenya = await this.ramenyaModel.findById(id);
+    const ramenya = await this.ramenyaModel
+      .findById(id)
+      .select(
+        'name genre region address latitude longitude contactNumber instagramProfile businessHours recommendedMenu ramenroadReview isSelfmadeNoodle',
+      );
 
     if (!ramenya) {
       throw new HttpException('Ramenya not found', HttpStatus.NOT_FOUND);
     }
 
     return ramenya;
+  }
+
+  async getRamenyasRegion(): Promise<Array<string>> {
+    const result = await this.ramenyaModel.find().select('region');
+
+    const regions = [];
+
+    let i;
+    for (i = 0; i < result.length; i++) {
+      regions.push(result[i].region);
+    }
+
+    return regions;
   }
 }
