@@ -44,6 +44,9 @@ export class RamenyaService {
       regions.push(result[i].region);
     }
 
-    return regions;
+    const regionsSet = new Set(regions);
+    const uniqueRegions = [...regionsSet];
+
+    return uniqueRegions;
   }
 }
