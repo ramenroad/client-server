@@ -12,6 +12,11 @@ export class RamenyaController {
     return this.ramenyaService.getRamenyas(region);
   }
 
+  @Get('/regions')
+  getRamenyasRegion(): Promise<Array<string>> {
+    return this.ramenyaService.getRamenyasRegion();
+  }
+
   @Get('/:id')
   getRamenyaById(@Param('id') id: string): Promise<getRamenyaByIdResDTO> {
     return this.ramenyaService.getRamenyaById(id);
