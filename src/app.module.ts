@@ -7,7 +7,7 @@ import { ConfigModule } from '@nestjs/config';
   imports: [
     RamenyaModule,
     ConfigModule.forRoot({
-      envFilePath: '.env.dev',
+      envFilePath: process.env.ENV_NAME,
       isGlobal: true,
     }),
     MongooseModule.forRoot(process.env.MONGODB_URL, {
