@@ -10,7 +10,9 @@ import { ConfigModule } from '@nestjs/config';
       envFilePath: '.env.dev',
       isGlobal: true,
     }),
-    MongooseModule.forRoot(process.env.MONGODB_URL),
+    MongooseModule.forRoot(process.env.MONGODB_URL, {
+      dbName: process.env.MONGODB_DB_NAME,
+    }),
   ],
   controllers: [],
   providers: [],
