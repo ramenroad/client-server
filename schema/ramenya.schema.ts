@@ -13,6 +13,11 @@ export class ramenya extends Document {
   name: string;
 
   @Prop({
+    required: false,
+  })
+  thumbnailUrl: string;
+
+  @Prop({
     required: true,
   })
   genre: string[];

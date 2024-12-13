@@ -15,7 +15,7 @@ export class RamenyaService {
     const query = region ? { region: region } : {};
     const ramenyas = await this.ramenyaModel
       .find(query)
-      .select('name genre region address businessHours');
+      .select('name thumbnailUrl genre region address businessHours');
 
     return ramenyas;
   }
@@ -24,7 +24,7 @@ export class RamenyaService {
     const ramenya = await this.ramenyaModel
       .findById(id)
       .select(
-        'name genre region address latitude longitude contactNumber instagramProfile businessHours recommendedMenu ramenroadReview isSelfmadeNoodle',
+        'name thumbnailUrl genre region address latitude longitude contactNumber instagramProfile businessHours recommendedMenu ramenroadReview isSelfmadeNoodle',
       );
 
     if (!ramenya) {
