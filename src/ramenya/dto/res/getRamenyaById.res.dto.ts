@@ -28,6 +28,9 @@ export class getRamenyaByIdResDTO {
   name: string;
 
   @ApiProperty()
+  thumbnailUrl: string;
+
+  @ApiProperty()
   genre: string[];
 
   @ApiProperty()

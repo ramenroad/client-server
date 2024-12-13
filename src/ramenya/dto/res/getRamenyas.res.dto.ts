@@ -20,6 +20,9 @@ export class getRamenyasResDTO {
   name: string;
 
   @ApiProperty()
+  thumbnailUrl: string;
+
+  @ApiProperty()
   genre: string[];
 
   @ApiProperty()
