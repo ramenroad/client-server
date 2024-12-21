@@ -47,7 +47,7 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: ${{ env.DOCKER_IMAGE }}:latest
-          build-args: BUILD_ENV=dev
+          build-args: BUILD_ENV=prod
   # 배포 Job
   deploy:
     needs: build
