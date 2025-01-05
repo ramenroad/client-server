@@ -10,6 +10,12 @@ async function bootstrap() {
     type: VersioningType.URI,
   });
 
+  app.enableCors({
+    origin: ['http://localhost:5173', 'https://ramenroad.com'],
+    methods: 'GET,PATCH,POST,DELETE',
+    credentials: true,
+  });
+
   const config = new DocumentBuilder()
     .setTitle('라멘로드 API Docs')
     .setDescription('라멘로드 API 입니다')
