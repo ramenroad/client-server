@@ -11,8 +11,28 @@ export class RamenyaService {
     @InjectModel('ramenya') private readonly ramenyaModel: Model<ramenya>,
   ) {}
 
-  async getRamenyas(region?: string): Promise<getRamenyasResDTO[]> {
-    const query = region ? { region: region } : {};
+  async getRamenyas(
+    region?: string,
+    genre?: string,
+  ): Promise<getRamenyasResDTO[]> {
+    type queryType = {
+      region?: string;
+      genre?: {
+        $in: string[];
+      };
+    };
+
+    const query: queryType = {};
+
+    if (region) {
+      query.region = region;
+    }
+    if (genre) {
+      const searchKeywordOfGenreArray = genre.split(',');
+
+      query.genre = { $in: searchKeywordOfGenreArray };
+    }
+
     const ramenyas = await this.ramenyaModel
       .find(query)
       .select('name thumbnailUrl genre region address businessHours');
