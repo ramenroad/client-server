@@ -23,6 +23,14 @@ class businessHours {
 }
 [];
 
+class ramenroadReview {
+  @ApiProperty()
+  oneLineReview: string;
+
+  @ApiProperty()
+  description: string;
+}
+
 export class getRamenyaByIdResDTO {
   @ApiProperty()
   name: string;
@@ -56,6 +64,9 @@ export class getRamenyaByIdResDTO {
 
   @ApiProperty({ type: [recommendedMenu] })
   recommendedMenu?: recommendedMenu[];
+
+  @ApiProperty({ type: ramenroadReview })
+  ramenroadReview: ramenroadReview;
 
   @ApiProperty()
   isSelfmadeNoodle: boolean;
