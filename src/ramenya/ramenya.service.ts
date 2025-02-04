@@ -80,7 +80,7 @@ export class RamenyaService {
         isShown: true,
       })
       .sort({ priority: 1 });
-    console.log(ramenyaGroups);
+
     return ramenyaGroups;
   }
 }
