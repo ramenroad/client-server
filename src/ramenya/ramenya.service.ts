@@ -4,11 +4,15 @@ import { Model } from 'mongoose';
 import { getRamenyasResDTO } from './dto/res/getRamenyas.res.dto';
 import { getRamenyaByIdResDTO } from './dto/res/getRamenyaById.res.dto';
 import { ramenya } from 'schema/ramenya.schema';
+import { ramenyaGroup } from 'schema/ramenyaGroup.schema';
+import { getRamenyaGroupsResDTO } from './dto/res/getRamenyaGroups.res.dto';
 
 @Injectable()
 export class RamenyaService {
   constructor(
     @InjectModel('ramenya') private readonly ramenyaModel: Model<ramenya>,
+    @InjectModel('ramenyaGroup')
+    private readonly ramenyaGroupModel: Model<ramenyaGroup>,
   ) {}
 
   async getRamenyas(
@@ -68,5 +72,15 @@ export class RamenyaService {
     const uniqueRegions = [...regionsSet];
 
     return uniqueRegions;
+  }
+
+  async getRamenyaGroups(): Promise<getRamenyaGroupsResDTO[]> {
+    const ramenyaGroups = await this.ramenyaGroupModel
+      .find({
+        isShown: true,
+      })
+      .sort({ priority: 1 });
+    console.log(ramenyaGroups);
+    return ramenyaGroups;
   }
 }
