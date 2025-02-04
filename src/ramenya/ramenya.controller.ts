@@ -3,6 +3,7 @@ import { RamenyaService } from './ramenya.service';
 import { getRamenyasResDTO } from './dto/res/getRamenyas.res.dto';
 import { getRamenyaByIdResDTO } from './dto/res/getRamenyaById.res.dto';
 import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import { getRamenyaGroupsResDTO } from './dto/res/getRamenyaGroups.res.dto';
 
 @Controller({ path: 'ramenya', version: '1' })
 export class RamenyaController {
@@ -77,5 +78,20 @@ export class RamenyaController {
   @Get('/:id')
   getRamenyaById(@Param('id') id: string): Promise<getRamenyaByIdResDTO> {
     return this.ramenyaService.getRamenyaById(id);
+  }
+
+  @ApiOperation({
+    summary: '라멘야 그룹 별 보기 조회',
+    description: '라멘야 그룹의 isShown 필드가 true인 documents만 조회됩니다.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '라멘야 그룹 별 보기 조회 성공',
+    type: getRamenyaGroupsResDTO,
+    isArray: true,
+  })
+  @Get('/group/all')
+  getRamenyaGroups(): Promise<getRamenyaGroupsResDTO[]> {
+    return this.ramenyaService.getRamenyaGroups();
   }
 }
