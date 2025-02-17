@@ -29,6 +29,12 @@ export class getRamenyasResDTO {
   region: string;
 
   @ApiProperty()
+  latitude: number;
+
+  @ApiProperty()
+  longitude: number;
+
+  @ApiProperty()
   address: string;
 
   @ApiProperty({ type: [businessHours] })
