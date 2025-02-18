@@ -15,6 +15,14 @@ class businessHours {
 }
 [];
 
+class ramenroadReview {
+  @ApiProperty()
+  oneLineReview: string;
+
+  @ApiProperty()
+  description: string;
+}
+
 export class getRamenyasResDTO {
   @ApiProperty()
   name: string;
@@ -36,6 +44,9 @@ export class getRamenyasResDTO {
 
   @ApiProperty()
   address: string;
+
+  @ApiProperty({ type: ramenroadReview })
+  ramenroadReview: ramenroadReview;
 
   @ApiProperty({ type: [businessHours] })
   businessHours: businessHours[];
