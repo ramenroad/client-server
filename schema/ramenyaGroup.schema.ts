@@ -20,6 +20,16 @@ class ramenya {
     breakTime?: string;
     isOpen: boolean;
   }[];
+
+  @Prop({
+    required: true,
+    type: {
+      oneLineReview: { type: String, required: true },
+      description: { type: String, required: true },
+    },
+    _id: false,
+  })
+  ramenroadReview: { oneLineReview: string; description: string };
 }
 
 @Schema({
