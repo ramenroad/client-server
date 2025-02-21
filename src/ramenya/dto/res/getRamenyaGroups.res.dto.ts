@@ -50,6 +50,16 @@ class ramenyas {
   })
   address: string;
 
+  @ApiProperty({
+    type: Number,
+  })
+  latitude: number;
+
+  @ApiProperty({
+    type: Number,
+  })
+  longitude: number;
+
   @ApiProperty({ type: businessHours, isArray: true })
   businessHours: businessHours[];
 
