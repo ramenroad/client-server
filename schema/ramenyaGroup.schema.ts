@@ -14,6 +14,16 @@ class ramenya {
 
   region: string;
 
+  @Prop({
+    required: true,
+  })
+  latitude: number;
+
+  @Prop({
+    required: true,
+  })
+  longitude: number;
+
   businessHours: {
     day: string;
     operatingTime?: string;
