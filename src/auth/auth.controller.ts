@@ -32,9 +32,8 @@ export class AuthController {
   @Post('/signin/kakao')
   signInUserByKakao(
     @Body() dto: signInUserByKakakoReqDTO,
-    @Res() res: Response,
   ): Promise<signInUserByKakakoResDTO> {
-    return this.authService.signInUserByKakao(dto, res);
+    return this.authService.signInUserByKakao(dto);
   }
 
   @Public()
