@@ -3,7 +3,7 @@ import { MypageService } from './mypage.service';
 import { User } from 'src/common/decorators/user.decorator';
 import { updateNicknameReqDTO } from './dto/req/updateNickname.req.dto';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { JwtPayload } from 'src/common/types/User.type';
+import { JwtPayload } from 'src/common/types/jwtpayloadtype';
 
 @Controller('mypage')
 export class MypageController {
