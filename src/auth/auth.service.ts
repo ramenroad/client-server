@@ -1,6 +1,7 @@
 import {
   ConflictException,
   HttpException,
+  HttpStatus,
   Injectable,
   InternalServerErrorException,
   Res,
@@ -9,11 +10,11 @@ import { InjectModel } from '@nestjs/mongoose';
 import axios, { HttpStatusCode } from 'axios';
 import { Model } from 'mongoose';
 import { user } from 'schema/user.schema';
-import { signUpUserByKakaoReqDTO } from './dto/req/signUpUserByKakao.req.dto';
 import { signInUserByKakakoReqDTO } from './dto/req/signInUserByKakao.req.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { Response } from 'express';
+import { signInUserByKakakoResDTO } from './dto/res/signInUserByKakao.res.dto';
 
 @Injectable()
 export class AuthService {
@@ -22,7 +23,10 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async signInUserByKakao(dto: signInUserByKakakoReqDTO, @Res() res: Response) {
+  async signInUserByKakao(
+    dto: signInUserByKakakoReqDTO,
+    @Res() res: Response,
+  ): Promise<signInUserByKakakoResDTO> {
     // <-> Kakao API / 리프레쉬 토큰으로 카카오 토큰 재발급
     const header = {
       'Content-type': 'application/x-www-form-urlencoded;charset=utf-8',
@@ -78,6 +82,7 @@ export class AuthService {
         .create({
           email: response2.data.kakao_account.email,
           kakaoId: String(response2.data.id),
+          nickname: await this.generateRandomNickname(),
         })
         .then((userInfo) => (newUser = userInfo));
 
@@ -88,7 +93,7 @@ export class AuthService {
       );
       await this.updateUserRtHash(newUser.id, tokens.refreshToken);
 
-      return res.status(201).json(tokens);
+      return tokens;
     } else {
       //존재하는 경우, 로그인 토큰 발급
       const tokens = await this.getUserTokens(
@@ -98,7 +103,7 @@ export class AuthService {
       );
       await this.updateUserRtHash(user.id, tokens.refreshToken);
 
-      return res.status(200).json(tokens);
+      return tokens;
     }
   }
 
@@ -134,17 +139,90 @@ export class AuthService {
   }
 
   async updateUserRtHash(userId: string, rt: string): Promise<void> {
-    const hashedRefreshToken = await this.hashData(rt);
+    const hashedRefreshToken = bcrypt.hashSync(rt, 10);
+    //const hashedRefreshToken = await this.hashData(rt);
 
     await this.userModel.findByIdAndUpdate(userId, {
       refreshToken: hashedRefreshToken,
     });
   }
 
-  hashData(data: string): string {
-    const salt = bcrypt.genSaltSync(10);
+  async generateRandomNickname() {
+    const lastNames = [
+      '매콤한',
+      '깔끔한',
+      '시원한',
+      '녹진한',
+      '진한',
+      '맛있는',
+      '짭잘한',
+      '기름진',
+    ];
+    const firstNames = [
+      '돈코츠',
+      '시오',
+      '쇼유',
+      '이에케',
+      '지로',
+      '토리파이탄',
+      '니보시',
+      '아사리',
+      '탄탄멘',
+      '마제소바',
+      '아부라소바',
+      '츠케멘',
+    ];
 
-    const hashedData = bcrypt.hash(data, salt);
-    return hashedData;
+    const randomLastName =
+      lastNames[Math.floor(Math.random() * lastNames.length)];
+    const randomFirstName =
+      firstNames[Math.floor(Math.random() * firstNames.length)];
+    const randomNumber = Math.floor(100 + Math.random() * 900);
+
+    const nickname =
+      randomLastName + ' ' + randomFirstName + ' ' + randomNumber;
+
+    //중복확인
+    const alreadyExist = await this.userModel.findOne({
+      nickname: nickname,
+    });
+
+    if (alreadyExist) {
+      return this.generateRandomNickname();
+    }
+
+    return nickname;
+  }
+
+  async refreshAccessToken(user: any) {
+    const userRt = user.refreshToken;
+    const userId = user.payload.id;
+
+    const existedUser = await this.userModel.findById(userId);
+
+    if (!existedUser || !existedUser.refreshToken) {
+      throw new HttpException(
+        'AccessToken이 유효하지 않습니다.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const rtMatches = await bcrypt.compare(userRt, existedUser.refreshToken);
+
+    if (!rtMatches) {
+      throw new HttpException(
+        '해당 유저의 refreshToken이 아닙니다.',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
+    const tokens = await this.getUserTokens(
+      user.payload.id,
+      user.payload.email,
+      user.payload.nickname,
+    );
+    await this.updateUserRtHash(user.payload.id, tokens.refreshToken);
+
+    return tokens;
   }
 }

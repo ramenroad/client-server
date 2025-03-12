@@ -15,13 +15,13 @@ export class user extends Document {
   @Prop({
     required: false,
     unique: true,
-    default: '닉네임을 생성해주세요',
   })
   nickname: string;
 
   @Prop({
     required: true,
-    default: 'test',
+    default:
+      'https://ramenroad-prod.s3.ap-northeast-2.amazonaws.com/images/public/basic_profile.png',
   })
   profileImageUrl: string;
 
