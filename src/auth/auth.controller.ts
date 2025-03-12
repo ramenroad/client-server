@@ -9,7 +9,7 @@ import { signInUserByKakakoResDTO } from './dto/res/signInUserByKakao.res.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from 'src/common/decorators/user.decorator';
 import { refreshAccessTokenResDTO } from './dto/res/refreshAccessToken.res.dto';
-import { RtJwtPayload } from 'src/common/types/jwtpayloadtype';
+import { JwtPayload, RtJwtPayload } from 'src/common/types/jwtpayloadtype';
 
 @Controller('auth')
 export class AuthController {
@@ -62,5 +62,18 @@ export class AuthController {
     @User() user: RtJwtPayload,
   ): Promise<refreshAccessTokenResDTO> {
     return this.authService.refreshAccessToken(user);
+  }
+
+  @ApiOperation({
+    summary: '로그아웃',
+  })
+  @ApiResponse({
+    status: 201,
+    description: '로그아웃 성공',
+  })
+  @ApiBearerAuth('accessToken')
+  @Post('signout')
+  signOut(@User() user: JwtPayload): Promise<void> {
+    return this.authService.signOut(user);
   }
 }
