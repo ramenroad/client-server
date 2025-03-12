@@ -4,11 +4,13 @@ import { getRamenyasResDTO } from './dto/res/getRamenyas.res.dto';
 import { getRamenyaByIdResDTO } from './dto/res/getRamenyaById.res.dto';
 import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { getRamenyaGroupsResDTO } from './dto/res/getRamenyaGroups.res.dto';
+import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller({ path: 'ramenya', version: '1' })
 export class RamenyaController {
   constructor(private readonly ramenyaService: RamenyaService) {}
 
+  @Public()
   @ApiOperation({
     summary: '라멘야 전체 정보 조회',
     description:
@@ -51,6 +53,7 @@ export class RamenyaController {
     return this.ramenyaService.getRamenyas(region, genre);
   }
 
+  @Public()
   @ApiOperation({
     summary: '라멘야 리전 정보 조회',
     description: '저장된 라멘야의 모든 리전을 조회합니다.',
@@ -66,6 +69,7 @@ export class RamenyaController {
     return this.ramenyaService.getRamenyasRegion();
   }
 
+  @Public()
   @ApiOperation({
     summary: '라멘야 상세 정보 조회',
     description: '라멘야 id로 상세 정보를 조회합니다.',
@@ -80,6 +84,7 @@ export class RamenyaController {
     return this.ramenyaService.getRamenyaById(id);
   }
 
+  @Public()
   @ApiOperation({
     summary: '라멘야 그룹 별 보기 조회',
     description: '라멘야 그룹의 isShown 필드가 true인 documents만 조회됩니다.',
