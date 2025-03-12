@@ -20,6 +20,28 @@ async function bootstrap() {
     .setTitle('라멘로드 API Docs')
     .setDescription('라멘로드 API 입니다')
     .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT accessToken',
+        description: 'Enter JWT accessToken',
+        in: 'header',
+      },
+      'accessToken',
+    )
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT refreshToken',
+        description: 'Enter JWT refreshToken',
+        in: 'header',
+      },
+      'refreshToken',
+    )
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api-docs', app, documentFactory);
