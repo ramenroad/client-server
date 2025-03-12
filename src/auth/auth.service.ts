@@ -15,6 +15,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { Response } from 'express';
 import { signInUserByKakakoResDTO } from './dto/res/signInUserByKakao.res.dto';
+import { RtJwtPayload } from 'src/common/types/jwtpayloadtype';
 
 @Injectable()
 export class AuthService {
@@ -107,7 +108,7 @@ export class AuthService {
     }
   }
 
-  async getUserTokens(userId: string, email: string, nickname: string) {
+  async getUserTokens(userId: string, email: string, nickname?: string) {
     const [at, rt] = await Promise.all([
       this.jwtService.signAsync(
         {
@@ -194,7 +195,8 @@ export class AuthService {
     return nickname;
   }
 
-  async refreshAccessToken(user: any) {
+  async refreshAccessToken(user: RtJwtPayload) {
+    console.log(user);
     const userRt = user.refreshToken;
     const userId = user.payload.id;
 
@@ -219,7 +221,7 @@ export class AuthService {
     const tokens = await this.getUserTokens(
       user.payload.id,
       user.payload.email,
-      user.payload.nickname,
+      existedUser.nickname,
     );
     await this.updateUserRtHash(user.payload.id, tokens.refreshToken);
 

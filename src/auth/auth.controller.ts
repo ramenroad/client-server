@@ -9,6 +9,7 @@ import { signInUserByKakakoResDTO } from './dto/res/signInUserByKakao.res.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from 'src/common/decorators/user.decorator';
 import { refreshAccessTokenResDTO } from './dto/res/refreshAccessToken.res.dto';
+import { RtJwtPayload } from 'src/common/types/jwtpayloadtype';
 
 @Controller('auth')
 export class AuthController {
@@ -58,7 +59,7 @@ export class AuthController {
   })
   @Post('refresh')
   refreshAccessToken(
-    @User() user: AuthResponse,
+    @User() user: RtJwtPayload,
   ): Promise<refreshAccessTokenResDTO> {
     return this.authService.refreshAccessToken(user);
   }
