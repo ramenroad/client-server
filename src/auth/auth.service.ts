@@ -3,6 +3,7 @@ import {
   HttpException,
   Injectable,
   InternalServerErrorException,
+  Res,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import axios, { HttpStatusCode } from 'axios';
@@ -12,6 +13,7 @@ import { signUpUserByKakaoReqDTO } from './dto/req/signUpUserByKakao.req.dto';
 import { signInUserByKakakoReqDTO } from './dto/req/signInUserByKakao.req.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -20,61 +22,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async signUpUserByKakao(dto: signUpUserByKakaoReqDTO): Promise<void> {
-    // <-> Kakao API / authorizationCode 토큰으로 카카오 토큰 재발급
-    const header = {
-      'Content-type': 'application/x-www-form-urlencoded;charset=utf-8',
-    };
-
-    const body = {
-      grant_type: 'authorization_code',
-      client_id: process.env.KAKAO_REST_API_KEY,
-      code: dto.authorizationCode,
-      redirect_uri: 'http://localhost:5173',
-    };
-
-    const apiUrl = 'https://kauth.kakao.com/oauth/token';
-    console.log('리퀘1전');
-    const response1: any = await axios
-      .post(apiUrl, body, { headers: header })
-      .catch((error) => console.log(error.response.data));
-    console.log('리퀘1후');
-
-    // <-> Kakao API / 토큰으로 사용자 정보 받아오기 API 요청
-    const userToken = response1.data.access_token;
-
-    const header2 = {
-      Authorization: `Bearer ${userToken}`,
-      'Content-type': 'application/x-www-form-urlencoded;charset=utf-8',
-    };
-
-    const response2 = await axios.get(
-      `https://kapi.kakao.com/v2/user/me?property_keys=["kakao_account.email"]`,
-      {
-        headers: header2,
-      },
-    );
-
-    //유저 존재 여부 검증
-    const alreadyExist = await this.userModel.findOne({
-      kakaoId: String(response2.data.id),
-    });
-
-    if (alreadyExist) {
-      throw new ConflictException('해당 정보로 가입한 유저가 이미 존재합니다.');
-    }
-
-    //유저 생성
-    await this.userModel.create({
-      email: response2.data.kakao_account.email,
-      nickname: dto.nickname,
-      kakaoId: String(response2.data.id),
-    });
-
-    return;
-  }
-
-  async signInUserByKakao(dto: signInUserByKakakoReqDTO) {
+  async signInUserByKakao(dto: signInUserByKakakoReqDTO, @Res() res: Response) {
     // <-> Kakao API / 리프레쉬 토큰으로 카카오 토큰 재발급
     const header = {
       'Content-type': 'application/x-www-form-urlencoded;charset=utf-8',
@@ -123,20 +71,35 @@ export class AuthService {
       kakaoId: String(response2.data.id),
     });
 
-    if (!user)
-      throw new HttpException(
-        {
-          errorMessage:
-            '해당 정보로 가입한 유저가 존재하지 않습니다. 회원가입 절차가 필요합니다.',
-        },
-        HttpStatusCode.MovedPermanently,
+    if (!user) {
+      //존재하지 않는 경우, 유저 생성 후 토큰 발급
+      let newUser;
+      await this.userModel
+        .create({
+          email: response2.data.kakao_account.email,
+          kakaoId: String(response2.data.id),
+        })
+        .then((userInfo) => (newUser = userInfo));
+
+      const tokens = await this.getUserTokens(
+        newUser.id,
+        newUser.email,
+        newUser.nickname,
       );
+      await this.updateUserRtHash(newUser.id, tokens.refreshToken);
 
-    //존재하는 경우, 로그인 토큰 발급
-    const tokens = await this.getUserTokens(user.id, user.email, user.nickname);
-    await this.updateUserRtHash(user.id, tokens.refreshToken);
+      return res.status(201).json(tokens);
+    } else {
+      //존재하는 경우, 로그인 토큰 발급
+      const tokens = await this.getUserTokens(
+        user.id,
+        user.email,
+        user.nickname,
+      );
+      await this.updateUserRtHash(user.id, tokens.refreshToken);
 
-    return tokens;
+      return res.status(200).json(tokens);
+    }
   }
 
   async getUserTokens(userId: string, email: string, nickname: string) {

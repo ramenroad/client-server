@@ -13,14 +13,15 @@ export class user extends Document {
   email: string;
 
   @Prop({
-    required: true,
+    required: false,
     unique: true,
+    default: '닉네임을 생성해주세요',
   })
   nickname: string;
 
   @Prop({
     required: true,
-    default: '',
+    default: 'test',
   })
   profileImageUrl: string;
 
