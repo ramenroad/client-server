@@ -15,7 +15,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { Response } from 'express';
 import { signInUserByKakakoResDTO } from './dto/res/signInUserByKakao.res.dto';
-import { RtJwtPayload } from 'src/common/types/jwtpayloadtype';
+import { JwtPayload, RtJwtPayload } from 'src/common/types/jwtpayloadtype';
 
 @Injectable()
 export class AuthService {
@@ -196,7 +196,6 @@ export class AuthService {
   }
 
   async refreshAccessToken(user: RtJwtPayload) {
-    console.log(user);
     const userRt = user.refreshToken;
     const userId = user.payload.id;
 
@@ -226,5 +225,15 @@ export class AuthService {
     await this.updateUserRtHash(user.payload.id, tokens.refreshToken);
 
     return tokens;
+  }
+
+  async signOut(user: JwtPayload): Promise<void> {
+    //로그아웃
+
+    await this.userModel.findByIdAndUpdate(user.id, {
+      refreshToken: '',
+    });
+
+    return;
   }
 }
