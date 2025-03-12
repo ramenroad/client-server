@@ -6,6 +6,7 @@ import { BannerModule } from './banner/banner.module';
 import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { AtGuard } from './common/guards/at.guard';
+import { MypageModule } from './mypage/mypage.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { AtGuard } from './common/guards/at.guard';
     }),
     BannerModule,
     AuthModule,
+    MypageModule,
   ],
   controllers: [],
   providers: [
