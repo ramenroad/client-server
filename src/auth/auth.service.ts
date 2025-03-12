@@ -25,7 +25,6 @@ export class AuthService {
 
   async signInUserByKakao(
     dto: signInUserByKakakoReqDTO,
-    @Res() res: Response,
   ): Promise<signInUserByKakakoResDTO> {
     // <-> Kakao API / 리프레쉬 토큰으로 카카오 토큰 재발급
     const header = {
@@ -91,6 +90,7 @@ export class AuthService {
         newUser.email,
         newUser.nickname,
       );
+
       await this.updateUserRtHash(newUser.id, tokens.refreshToken);
 
       return tokens;
