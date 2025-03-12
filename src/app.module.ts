@@ -3,6 +3,9 @@ import { RamenyaModule } from './ramenya/ramenya.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { BannerModule } from './banner/banner.module';
+import { AuthModule } from './auth/auth.module';
+import { APP_GUARD } from '@nestjs/core';
+import { AtGuard } from './common/guards/at.guard';
 
 @Module({
   imports: [
@@ -15,8 +18,14 @@ import { BannerModule } from './banner/banner.module';
       dbName: process.env.MONGODB_DB_NAME,
     }),
     BannerModule,
+    AuthModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AtGuard,
+    },
+  ],
 })
 export class AppModule {}
