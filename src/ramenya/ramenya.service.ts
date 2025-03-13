@@ -50,8 +50,9 @@ export class RamenyaService {
     const ramenya = await this.ramenyaModel
       .findById(id)
       .select(
-        'name thumbnailUrl genre region address latitude longitude contactNumber instagramProfile businessHours recommendedMenu ramenroadReview isSelfmadeNoodle',
-      );
+        'name thumbnailUrl genre region address latitude longitude contactNumber instagramProfile businessHours recommendedMenu ramenroadReview isSelfmadeNoodle rating reviewCount menus reviews',
+      )
+      .populate('reviews');
 
     if (!ramenya) {
       throw new HttpException('Ramenya not found', HttpStatus.NOT_FOUND);
