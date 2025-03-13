@@ -5,7 +5,6 @@ export class signInUserByKakakoReqDTO {
   @ApiProperty({
     description: '카카오 인가 코드',
   })
-  @IsString()
   @IsNotEmpty()
   authorizationCode: string;
 }
