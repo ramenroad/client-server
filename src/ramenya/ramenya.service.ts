@@ -40,7 +40,7 @@ export class RamenyaService {
     const ramenyas = await this.ramenyaModel
       .find(query)
       .select(
-        'name thumbnailUrl genre region address businessHours longitude latitude ramenroadReview',
+        'name thumbnailUrl genre region address businessHours longitude latitude ramenroadReview rating reviewCount',
       );
 
     return ramenyas;
