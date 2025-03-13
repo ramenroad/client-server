@@ -84,7 +84,8 @@ export class ramenya extends Document {
   isSelfmadeNoodle: boolean;
 
   @Prop({
-    required: false,
+    required: true,
+    default: [],
   })
   menus: string[];
 
@@ -103,11 +104,10 @@ export class ramenya extends Document {
   reviewCount: number;
 
   @Prop({
-    ref: 'review',
-    type: MongooseSchema.Types.ObjectId,
+    type: [{ type: MongooseSchema.Types.ObjectId, ref: 'review' }], // 배열로 수정
     required: false,
   })
-  reviews: string[];
+  reviews: MongooseSchema.Types.ObjectId[];
 }
 
 export const ramenyaSchema = SchemaFactory.createForClass(ramenya);

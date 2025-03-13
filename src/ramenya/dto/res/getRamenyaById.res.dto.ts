@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ObjectId } from 'mongoose';
 
 class recommendedMenu {
   @ApiProperty()
@@ -29,6 +30,32 @@ class ramenroadReview {
 
   @ApiProperty()
   description: string;
+}
+
+class review {
+  @ApiProperty()
+  _id: string;
+
+  @ApiProperty()
+  ramenyaId: string;
+
+  @ApiProperty()
+  userId: string;
+
+  @ApiProperty()
+  rating: number;
+
+  @ApiProperty()
+  review: string;
+
+  @ApiProperty({ type: [String] })
+  reviewImageUrls: string[];
+
+  @ApiProperty()
+  createdAt: Date;
+
+  @ApiProperty()
+  updatedAt: Date;
 }
 
 export class getRamenyaByIdResDTO {
@@ -70,4 +97,22 @@ export class getRamenyaByIdResDTO {
 
   @ApiProperty()
   isSelfmadeNoodle: boolean;
+
+  @ApiProperty({
+    type: 'number',
+  })
+  rating: number;
+
+  @ApiProperty({
+    type: 'number',
+  })
+  reviewCount: number;
+
+  @ApiProperty({
+    type: [String],
+  })
+  menus: string[];
+
+  @ApiProperty({ type: [review], required: false })
+  reviews?: ObjectId[];
 }
