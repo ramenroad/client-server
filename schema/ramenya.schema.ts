@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { Schema as MongooseSchema } from 'mongoose';
 
 @Schema({
   timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' },
@@ -81,6 +82,32 @@ export class ramenya extends Document {
     required: true,
   })
   isSelfmadeNoodle: boolean;
+
+  @Prop({
+    required: false,
+  })
+  menus: string[];
+
+  @Prop({
+    type: Number,
+    default: 0,
+    required: true,
+  })
+  rating: number;
+
+  @Prop({
+    type: Number,
+    default: 0,
+    required: true,
+  })
+  reviewCount: number;
+
+  @Prop({
+    ref: 'review',
+    type: MongooseSchema.Types.ObjectId,
+    required: false,
+  })
+  reviews: string[];
 }
 
 export const ramenyaSchema = SchemaFactory.createForClass(ramenya);

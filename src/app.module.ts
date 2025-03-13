@@ -8,6 +8,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AtGuard } from './common/guards/at.guard';
 import { MypageModule } from './mypage/mypage.module';
 import { ReviewModule } from './review/review.module';
+import { CommonService } from './common/common.service';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ReviewModule } from './review/review.module';
       provide: APP_GUARD,
       useClass: AtGuard,
     },
+    CommonService,
   ],
 })
 export class AppModule {}
