@@ -50,4 +50,14 @@ export class getRamenyasResDTO {
 
   @ApiProperty({ type: [businessHours] })
   businessHours: businessHours[];
+
+  @ApiProperty({
+    type: 'number',
+  })
+  rating: number;
+
+  @ApiProperty({
+    type: 'number',
+  })
+  reviewCount: number;
 }
