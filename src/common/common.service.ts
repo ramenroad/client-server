@@ -20,7 +20,7 @@ export class CommonService {
       },
     });
     this.s3 = new AWS.S3();
-    this.MAXIMUM_IMAGE_SIZE = 5000000; // 이미지 용량 3MB 제한
+    this.MAXIMUM_IMAGE_SIZE = 5000000; // 이미지 용량 5MB 제한
     this.ACCEPTABLE_MIME_TYPES = ['image/jpg', 'image/png', 'image/jpeg']; // 이미지 확장자 제한
     this.S3_BUCKET_NAME = process.env.S3_BUCKET_NAME;
   }
