@@ -9,7 +9,7 @@ on:
 env:
   DOCKER_IMAGE: ghcr.io/ramenroad/client-server-prod
   VERSION: ${{ github.sha }}
-  NAME: go_cicd
+  NAME: client-server-prod
 
 jobs:
   # 빌드 Job
