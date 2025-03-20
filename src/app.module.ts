@@ -9,6 +9,7 @@ import { AtGuard } from './common/guards/at.guard';
 import { MypageModule } from './mypage/mypage.module';
 import { ReviewModule } from './review/review.module';
 import { CommonService } from './common/common.service';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { CommonService } from './common/common.service';
     AuthModule,
     MypageModule,
     ReviewModule,
+    CommonModule,
   ],
   controllers: [],
   providers: [
