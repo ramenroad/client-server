@@ -4,6 +4,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import * as AWS from 'aws-sdk';
+import * as sharp from 'sharp';
 
 @Injectable()
 export class CommonService {
@@ -29,7 +30,7 @@ export class CommonService {
     path: string,
     name: string,
     file: Express.Multer.File,
-  ) {
+  ): Promise<string | Error> {
     if (!this.ACCEPTABLE_MIME_TYPES.includes(file.mimetype)) {
       throw new BadRequestException(
         '이미지 파일 확장자는 jpg, png, jpeg만 가능합니다.',
@@ -41,21 +42,34 @@ export class CommonService {
       );
     }
 
+    //모든 이미지는 webp로 변환하여 업로드
+    const webpBuffer = await this.convertToWebp(file.buffer);
+
     try {
       await new AWS.S3()
         .putObject({
-          Key: path + name,
-          Body: file.buffer,
+          Key: path + name + '.webp',
+          Body: webpBuffer,
           Bucket: this.S3_BUCKET_NAME,
-          ContentType: file.mimetype,
+          ContentType: 'image/webp',
         })
         .promise();
 
-      const url = `https://${this.S3_BUCKET_NAME}.s3.amazonaws.com/${path}${name}`;
+      const url = `https://${this.S3_BUCKET_NAME}.s3.amazonaws.com/${path}${name}.webp`;
 
       return url;
     } catch (error) {
       return new InternalServerErrorException('S3 업로드 실패');
+    }
+  }
+
+  async convertToWebp(buffer: Buffer): Promise<Buffer> {
+    try {
+      const webpBuffer = await sharp(buffer).webp().toBuffer();
+
+      return webpBuffer;
+    } catch (error) {
+      throw new InternalServerErrorException('WebP 변환 실패');
     }
   }
 }
