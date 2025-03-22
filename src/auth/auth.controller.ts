@@ -23,7 +23,8 @@ export class AuthController {
   })
   @ApiResponse({
     status: 201,
-    description: '로그인 성공 // 비회원이였던 경우, 회원가입 후 로그인 성공',
+    description:
+      '로그인 성공  // 비회원이였던 경우, 회원가입 후 로그인 성공 // type 값은 signin,signup 중 하나입니다. 로그인 시 signin, 회원가입 시 signup ',
     type: signInUserByKakakoResDTO,
   })
   @ApiResponse({

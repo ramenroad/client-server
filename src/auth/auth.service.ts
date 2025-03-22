@@ -13,7 +13,6 @@ import { user } from 'schema/user.schema';
 import { signInUserByKakakoReqDTO } from './dto/req/signInUserByKakao.req.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { Response } from 'express';
 import { signInUserByKakakoResDTO } from './dto/res/signInUserByKakao.res.dto';
 import { JwtPayload, RtJwtPayload } from 'src/common/types/jwtpayloadtype';
 
@@ -94,7 +93,12 @@ export class AuthService {
 
       await this.updateUserRtHash(newUser.id, tokens.refreshToken);
 
-      return tokens;
+      const response = {
+        type: 'signup',
+        ...tokens,
+      };
+
+      return response;
     } else {
       //존재하는 경우, 로그인 토큰 발급
       const tokens = await this.getUserTokens(
@@ -104,7 +108,12 @@ export class AuthService {
       );
       await this.updateUserRtHash(user.id, tokens.refreshToken);
 
-      return tokens;
+      const response = {
+        type: 'signin',
+        ...tokens,
+      };
+
+      return response;
     }
   }
 
