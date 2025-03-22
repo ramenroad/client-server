@@ -59,6 +59,12 @@ export class ramenyaGroup extends Document {
   description: string;
 
   @Prop({
+    default: 1,
+    required: true,
+  })
+  type: number;
+
+  @Prop({
     required: true,
   })
   priority: number;
