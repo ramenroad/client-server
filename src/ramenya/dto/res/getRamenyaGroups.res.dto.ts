@@ -91,6 +91,11 @@ export class getRamenyaGroupsResDTO {
   @ApiProperty({
     type: Number,
   })
+  type: number;
+
+  @ApiProperty({
+    type: Number,
+  })
   priority: number;
 
   @ApiProperty({
