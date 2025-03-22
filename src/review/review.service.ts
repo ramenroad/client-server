@@ -1,4 +1,9 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { review } from 'schema/review.schema';
@@ -82,5 +87,46 @@ export class ReviewService {
     }
   }
 
-  //TODO - 라멘야 정보 조회 부분 변경하기
+  async deleteReview(user: JwtPayload, reviewId: string): Promise<void> {
+    const review = await this.reviewModel.findById(reviewId);
+
+    if (!review) {
+      throw new NotFoundException('리뷰 정보 조회 실패');
+    }
+
+    if (String(review.userId) != user.id) {
+      throw new ForbiddenException('리뷰 삭제 권한 없음');
+    }
+
+    const transactionSession = await this.connection.startSession();
+
+    try {
+      transactionSession.startTransaction();
+
+      const ramenya = await this.ramenyaModel.findById(review.ramenyaId);
+      const rating =
+        (ramenya.rating * ramenya.reviewCount - review.rating) /
+        (ramenya.reviewCount - 1);
+
+      await this.reviewModel.findByIdAndDelete(reviewId);
+
+      await this.ramenyaModel.findByIdAndUpdate(review.ramenyaId, {
+        rating: rating,
+        $pull: {
+          reviews: reviewId,
+        },
+        $inc: {
+          reviewCount: -1,
+        },
+      });
+
+      await transactionSession.commitTransaction();
+      return;
+    } catch (error) {
+      await transactionSession.abortTransaction();
+      throw new InternalServerErrorException('리뷰 삭제 transaction 실패');
+    } finally {
+      await transactionSession.endSession();
+    }
+  }
 }

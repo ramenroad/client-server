@@ -1,6 +1,8 @@
 import {
   Body,
   Controller,
+  Delete,
+  Param,
   Post,
   UploadedFiles,
   UseInterceptors,
@@ -42,5 +44,29 @@ export class ReviewController {
     @UploadedFiles() reviewImages: Express.Multer.File[],
   ): Promise<void> {
     return this.reviewService.createReview(user, dto, reviewImages);
+  }
+
+  @ApiOperation({
+    summary: '내 리뷰 삭제하기',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '리뷰 삭제 성공',
+  })
+  @ApiResponse({
+    status: 404,
+    description: '해당 reviewId에 대한 리뷰를 찾을 수 없는 경우',
+  })
+  @ApiResponse({
+    status: 403,
+    description: '해당 리뷰의 작성자가 본인이 아닌 경우',
+  })
+  @ApiBearerAuth('accessToken')
+  @Delete(':reviewId')
+  deleteReview(
+    @User() user: JwtPayload,
+    @Param('reviewId') reviewId: string,
+  ): Promise<void> {
+    return this.reviewService.deleteReview(user, reviewId);
   }
 }
