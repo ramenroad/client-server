@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { Schema as MongooseSchema } from 'mongoose';
 
 @Schema({
   timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' },
@@ -11,6 +12,11 @@ export class ramenya extends Document {
     unique: true,
   })
   name: string;
+
+  @Prop({
+    required: false,
+  })
+  thumbnailUrl: string;
 
   @Prop({
     required: true,
@@ -76,6 +82,32 @@ export class ramenya extends Document {
     required: true,
   })
   isSelfmadeNoodle: boolean;
+
+  @Prop({
+    required: true,
+    default: [],
+  })
+  menus: string[];
+
+  @Prop({
+    type: Number,
+    default: 0,
+    required: true,
+  })
+  rating: number;
+
+  @Prop({
+    type: Number,
+    default: 0,
+    required: true,
+  })
+  reviewCount: number;
+
+  @Prop({
+    type: [{ type: MongooseSchema.Types.ObjectId, ref: 'review' }], // 배열로 수정
+    required: false,
+  })
+  reviews: MongooseSchema.Types.ObjectId[];
 }
 
 export const ramenyaSchema = SchemaFactory.createForClass(ramenya);
