@@ -47,7 +47,18 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: ${{ env.DOCKER_IMAGE }}:latest
-          build-args: BUILD_ENV=prod
+          build-args: |
+            BUILD_ENV=prod
+            DIGITAL_TWIN_KEY_DEV=${{ secrets.DIGITAL_TWIN_KEY_DEV }}
+            ENV_NAME=${{ secrets.ENV_NAME }}
+            JWT_AT_SECRET=${{ secrets.JWT_AT_SECRET }}
+            JWT_RT_SECRET=${{ secrets.JWT_RT_SECRET }}
+            KAKAO_REST_API_KEY=${{ secrets.KAKAO_REST_API_KEY }}
+            MONGODB_DB_NAME=${{ secrets.MONGODB_DB_NAME }}
+            MONGODB_URL=${{ secrets.MONGODB_URL }}
+            S3_ACCESS_KEY=${{ secrets.S3_ACCESS_KEY }}
+            S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }}
+            S3_BUCKET_NAME=${{ secrets.S3_BUCKET_NAME }}
   # 배포 Job
   deploy:
     needs: build
