@@ -4,18 +4,44 @@ import { Model } from 'mongoose';
 import { getRamenyasResDTO } from './dto/res/getRamenyas.res.dto';
 import { getRamenyaByIdResDTO } from './dto/res/getRamenyaById.res.dto';
 import { ramenya } from 'schema/ramenya.schema';
+import { ramenyaGroup } from 'schema/ramenyaGroup.schema';
+import { getRamenyaGroupsResDTO } from './dto/res/getRamenyaGroups.res.dto';
 
 @Injectable()
 export class RamenyaService {
   constructor(
     @InjectModel('ramenya') private readonly ramenyaModel: Model<ramenya>,
+    @InjectModel('ramenyaGroup')
+    private readonly ramenyaGroupModel: Model<ramenyaGroup>,
   ) {}
 
-  async getRamenyas(region?: string): Promise<getRamenyasResDTO[]> {
-    const query = region ? { region: region } : {};
+  async getRamenyas(
+    region?: string,
+    genre?: string,
+  ): Promise<getRamenyasResDTO[]> {
+    type queryType = {
+      region?: string;
+      genre?: {
+        $in: string[];
+      };
+    };
+
+    const query: queryType = {};
+
+    if (region) {
+      query.region = region;
+    }
+    if (genre) {
+      const searchKeywordOfGenreArray = genre.split(',');
+
+      query.genre = { $in: searchKeywordOfGenreArray };
+    }
+
     const ramenyas = await this.ramenyaModel
       .find(query)
-      .select('name genre region address businessHours');
+      .select(
+        'name thumbnailUrl genre region address businessHours longitude latitude ramenroadReview rating reviewCount',
+      );
 
     return ramenyas;
   }
@@ -24,8 +50,9 @@ export class RamenyaService {
     const ramenya = await this.ramenyaModel
       .findById(id)
       .select(
-        'name genre region address latitude longitude contactNumber instagramProfile businessHours recommendedMenu ramenroadReview isSelfmadeNoodle',
-      );
+        'name thumbnailUrl genre region address latitude longitude contactNumber instagramProfile businessHours recommendedMenu ramenroadReview isSelfmadeNoodle rating reviewCount menus reviews',
+      )
+      .populate('reviews');
 
     if (!ramenya) {
       throw new HttpException('Ramenya not found', HttpStatus.NOT_FOUND);
@@ -48,5 +75,15 @@ export class RamenyaService {
     const uniqueRegions = [...regionsSet];
 
     return uniqueRegions;
+  }
+
+  async getRamenyaGroups(): Promise<getRamenyaGroupsResDTO[]> {
+    const ramenyaGroups = await this.ramenyaGroupModel
+      .find({
+        isShown: true,
+      })
+      .sort({ priority: 1 });
+
+    return ramenyaGroups;
   }
 }
