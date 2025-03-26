@@ -40,9 +40,9 @@ ENV S3_SECRET_KEY=${S3_SECRET_KEY}
 ENV S3_BUCKET_NAME=${S3_BUCKET_NAME}
 
 # 환경 변수 확인 (디버깅용, 필요 시 주석 처리)
-RUN echo "BUILD_ENV=${RUNTIME_BUILD_ENV}" && \
-    echo "MONGODB_URL=${MONGODB_URL}" && \
-    echo "S3_BUCKET_NAME=${S3_BUCKET_NAME}"
+# RUN echo "BUILD_ENV=${RUNTIME_BUILD_ENV}" && \
+#    echo "MONGODB_URL=${MONGODB_URL}" && \
+#    echo "S3_BUCKET_NAME=${S3_BUCKET_NAME}"
 
 #build builder image
 RUN yarn build:${RUNTIME_BUILD_ENV}
