@@ -54,7 +54,7 @@ export class RamenyaService {
       )
       .populate({
         path: 'reviews',
-        options: { limit: 3 },
+        options: { limit: 3, sort: { createdAt: -1 } },
         populate: { path: 'userId', select: 'nickname profileImageUrl' },
       });
 
