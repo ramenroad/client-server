@@ -32,6 +32,17 @@ class ramenroadReview {
   description: string;
 }
 
+class user {
+  @ApiProperty()
+  _id: string;
+
+  @ApiProperty()
+  nickname: string;
+
+  @ApiProperty()
+  profileImageUrl: string;
+}
+
 class review {
   @ApiProperty()
   _id: string;
@@ -39,8 +50,8 @@ class review {
   @ApiProperty()
   ramenyaId: string;
 
-  @ApiProperty()
-  userId: string;
+  @ApiProperty({ type: user })
+  userId: object;
 
   @ApiProperty()
   rating: number;
