@@ -2,6 +2,7 @@ import {
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
+  NotAcceptableException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
@@ -12,6 +13,7 @@ import { createReviewReqDTO } from './dto/req/createReview.req.dto';
 import { CommonService } from 'src/common/common.service';
 import { ramenya } from 'schema/ramenya.schema';
 import { createReviewResDTO } from './dto/res/createReview.res.dto';
+import { getRamenyaReviewsResDTO } from './dto/res/getRamenyaReviews.res.dto';
 
 @Injectable()
 export class ReviewService {
@@ -128,5 +130,33 @@ export class ReviewService {
     } finally {
       await transactionSession.endSession();
     }
+  }
+
+  async getRamenyaReview(ramenyaId: string, page: number, limit: number) {
+    const total = await this.reviewModel.countDocuments({ ramenyaId });
+    const lastPage = Math.ceil(total / limit);
+
+    if (lastPage < page) {
+      throw new NotAcceptableException(
+        `해당 limit의 최대 페이지 수는 ${total} 입니다.`,
+      );
+    }
+
+    const reviews = await this.reviewModel
+      .find({ ramenyaId })
+      .select(
+        '_id ramenyaId userId rating review reviewImageUrls createdAt updatedAt',
+      )
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate({ path: 'userId', select: 'nickname profileImageUrl' });
+
+    const response = {
+      lastPage: lastPage,
+      reviews: reviews,
+    };
+
+    return response;
   }
 }

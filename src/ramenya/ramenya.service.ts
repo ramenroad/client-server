@@ -52,7 +52,11 @@ export class RamenyaService {
       .select(
         'name thumbnailUrl genre region address latitude longitude contactNumber instagramProfile businessHours recommendedMenu ramenroadReview isSelfmadeNoodle rating reviewCount menus reviews',
       )
-      .populate('reviews');
+      .populate({
+        path: 'reviews',
+        options: { limit: 3, sort: { createdAt: -1 } },
+        populate: { path: 'userId', select: 'nickname profileImageUrl' },
+      });
 
     if (!ramenya) {
       throw new HttpException('Ramenya not found', HttpStatus.NOT_FOUND);
