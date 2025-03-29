@@ -2,8 +2,10 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Param,
   Post,
+  Query,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
@@ -18,6 +20,8 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { User } from 'src/common/decorators/user.decorator';
 import { JwtPayload } from 'src/common/types/jwtpayloadtype';
 import { createReviewReqDTO } from './dto/req/createReview.req.dto';
+import { Public } from 'src/common/decorators/public.decorator';
+import { getRamenyaReviewsResDTO } from './dto/res/getRamenyaReviews.res.dto';
 
 @Controller('review')
 export class ReviewController {
@@ -68,5 +72,27 @@ export class ReviewController {
     @Param('reviewId') reviewId: string,
   ): Promise<void> {
     return this.reviewService.deleteReview(user, reviewId);
+  }
+
+  @Public()
+  @ApiOperation({
+    summary: '라멘야 리뷰 조회',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '라멘야 리뷰 조회 성공',
+    type: getRamenyaReviewsResDTO,
+  })
+  @ApiResponse({
+    status: 406,
+    description: '요청한 page가 최대 page 초과인 경우',
+  })
+  @Get('')
+  getRamenyaReviews(
+    @Query('ramenyaId') ramenyaId: string,
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+  ) {
+    return this.reviewService.getRamenyaReview(ramenyaId, page, limit);
   }
 }
