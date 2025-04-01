@@ -18,6 +18,9 @@ export class review extends Document {
   @Prop({ required: true })
   review: string;
 
+  @Prop({ required: false })
+  menus: string[];
+
   @Prop({
     default: [],
     type: [String],
