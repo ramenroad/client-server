@@ -52,6 +52,7 @@ export class ReviewService {
     }
 
     const transactionSession = await this.connection.startSession();
+    const menusArray = dto.menus.split(',').map((item) => item.trim());
 
     try {
       transactionSession.startTransaction();
@@ -59,6 +60,7 @@ export class ReviewService {
         userId: user.id,
         ramenyaId: dto.ramenyaId,
         rating: dto.rating,
+        menus: menusArray,
         review: dto.review,
         reviewImageUrls: reviewImagesUrls,
       });
