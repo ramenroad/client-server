@@ -14,6 +14,7 @@ import { CommonService } from 'src/common/common.service';
 import { ramenya } from 'schema/ramenya.schema';
 import { createReviewResDTO } from './dto/res/createReview.res.dto';
 import { getRamenyaReviewsResDTO } from './dto/res/getRamenyaReviews.res.dto';
+import { getRamenyaReviewImagesResDTO } from './dto/res/getRamenyaReviewImages.res.dto';
 
 @Injectable()
 export class ReviewService {
@@ -157,6 +158,32 @@ export class ReviewService {
     const response = {
       lastPage: lastPage,
       reviews: reviews,
+    };
+
+    return response;
+  }
+
+  async getRamenyaReviewImages(
+    ramenyaId: string,
+  ): Promise<getRamenyaReviewImagesResDTO> {
+    const ramenyas = await this.reviewModel
+      .find({
+        ramenyaId: ramenyaId,
+      })
+      .select('reviewImageUrls');
+
+    const ramenyaReviewImagesUrls = [];
+
+    for (let i = 0; i < ramenyas.length; i++) {
+      if (ramenyas[i].reviewImageUrls.length == 0) {
+        continue;
+      }
+
+      ramenyaReviewImagesUrls.push(...ramenyas[i].reviewImageUrls);
+    }
+
+    const response = {
+      ramenyaReviewImagesUrls: ramenyaReviewImagesUrls,
     };
 
     return response;
