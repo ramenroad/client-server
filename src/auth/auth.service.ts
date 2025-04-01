@@ -35,7 +35,7 @@ export class AuthService {
       grant_type: 'authorization_code',
       client_id: process.env.KAKAO_REST_API_KEY,
       code: dto.authorizationCode,
-      redirect_uri: 'http://localhost:5173/oauth/kakao',
+      redirect_uri: process.env.KAKAO_REDIRECT_URL,
     };
 
     const apiUrl = 'https://kauth.kakao.com/oauth/token';
