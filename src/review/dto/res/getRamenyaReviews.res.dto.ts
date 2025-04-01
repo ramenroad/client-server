@@ -32,6 +32,9 @@ export class review {
   rating: number;
 
   @ApiProperty()
+  menus?: string[];
+
+  @ApiProperty()
   review: string;
 
   @ApiProperty({ type: 'array', items: { type: 'string' } })
