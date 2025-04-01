@@ -147,7 +147,7 @@ export class ReviewService {
     const reviews = await this.reviewModel
       .find({ ramenyaId })
       .select(
-        '_id ramenyaId userId rating review reviewImageUrls createdAt updatedAt',
+        '_id ramenyaId userId rating review reviewImageUrls createdAt updatedAt menus',
       )
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
