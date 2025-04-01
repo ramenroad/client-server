@@ -57,6 +57,9 @@ class review {
   rating: number;
 
   @ApiProperty()
+  menus: string[];
+
+  @ApiProperty()
   review: string;
 
   @ApiProperty({ type: [String] })

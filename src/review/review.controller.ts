@@ -22,6 +22,7 @@ import { JwtPayload } from 'src/common/types/jwtpayloadtype';
 import { createReviewReqDTO } from './dto/req/createReview.req.dto';
 import { Public } from 'src/common/decorators/public.decorator';
 import { getRamenyaReviewsResDTO } from './dto/res/getRamenyaReviews.res.dto';
+import { getRamenyaReviewImagesResDTO } from 'src/review/dto/res/getRamenyaReviewImages.res.dto';
 
 @Controller('review')
 export class ReviewController {
@@ -94,5 +95,21 @@ export class ReviewController {
     @Query('limit') limit: number,
   ) {
     return this.reviewService.getRamenyaReview(ramenyaId, page, limit);
+  }
+
+  @Public()
+  @ApiOperation({
+    summary: '라멘야 리뷰 사진 정보 조회',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '라멘야 사진 정보 조회 성공',
+    type: getRamenyaReviewImagesResDTO,
+  })
+  @Get('/:ramenyaId/images')
+  getRamenyaReviewImages(
+    @Param('ramenyaId') ramenyaId: string,
+  ): Promise<getRamenyaReviewImagesResDTO> {
+    return this.reviewService.getRamenyaReviewImages(ramenyaId);
   }
 }

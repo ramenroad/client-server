@@ -24,6 +24,13 @@ export class createReviewReqDTO {
   review: string;
 
   @ApiProperty({
+    type: 'string',
+    example: '돈코츠라멘,매운돈코츠라멘',
+    description: '메뉴 이름을 띄어쓰기 없이 쉼표로 구분',
+  })
+  menus: string;
+
+  @ApiProperty({
     required: false,
     type: 'array',
     items: {
