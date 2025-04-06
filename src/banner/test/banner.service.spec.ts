@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { BannerService } from './banner.service';
+import { BannerService } from '../banner.service';
 
 describe('BannerService', () => {
   let service: BannerService;
