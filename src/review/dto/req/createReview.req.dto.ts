@@ -40,5 +40,5 @@ export class createReviewReqDTO {
     example: ['image1.jpg', 'image2.jpg'],
     description: '리뷰 이미지',
   })
-  reviewImageUrl?: Express.Multer.File[];
+  reviewImages?: Express.Multer.File[];
 }
