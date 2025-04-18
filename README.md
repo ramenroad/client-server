@@ -28,13 +28,13 @@
 
 - Backend
   - NestJS
+  - MongoDB Atlas
   - Mongoose
   - Swagger
 - DevOps
   - Github Actions
   - Docker
   - AWS | EC2, ALB, S3, Route53
-  - MongoDB Atlas
 
 ## 인프라 다이어그램
 
