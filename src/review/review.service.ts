@@ -109,9 +109,16 @@ export class ReviewService {
       transactionSession.startTransaction();
 
       const ramenya = await this.ramenyaModel.findById(review.ramenyaId);
-      const rating =
-        (ramenya.rating * ramenya.reviewCount - review.rating) /
-        (ramenya.reviewCount - 1);
+
+      let rating;
+
+      if (ramenya.reviewCount == 1) {
+        rating = 0;
+      } else {
+        rating =
+          (ramenya.rating * ramenya.reviewCount - review.rating) /
+          (ramenya.reviewCount - 1);
+      }
 
       await this.reviewModel.findByIdAndDelete(reviewId);
 
