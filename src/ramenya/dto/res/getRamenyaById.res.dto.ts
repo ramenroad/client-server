@@ -129,4 +129,26 @@ export class getRamenyaByIdResDTO {
 
   @ApiProperty({ type: [review], required: false })
   reviews?: ObjectId[];
+
+  @ApiProperty()
+  kakaoMapUrl?: string;
+
+  @ApiProperty()
+  kakaoMapDeepLink?: string;
+  
+  @ApiProperty()
+  naverMapUrl?: string;
+
+  @ApiProperty()
+  naverMapDeepLink?: string;
+
+  @ApiProperty()
+  googleMapUrl?: string;
+
+  @ApiProperty()
+  googleMapDeepLink?: string;
+  
+  
+  
+  
 }
