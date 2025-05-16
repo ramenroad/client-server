@@ -50,7 +50,7 @@ export class RamenyaService {
     const ramenya = await this.ramenyaModel
       .findById(id)
       .select(
-        'name thumbnailUrl genre region address latitude longitude contactNumber instagramProfile businessHours recommendedMenu ramenroadReview isSelfmadeNoodle rating reviewCount menus reviews',
+        'name thumbnailUrl genre region address latitude longitude contactNumber instagramProfile businessHours recommendedMenu ramenroadReview isSelfmadeNoodle rating reviewCount menus reviews kakaoMapUrl kakaoMapDeepLink naverMapUrl naverMapDeepLink googleMapUrl googleMapDeepLink',
       )
       .populate({
         path: 'reviews',
