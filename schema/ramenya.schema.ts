@@ -108,6 +108,37 @@ export class ramenya extends Document {
     required: false,
   })
   reviews: MongooseSchema.Types.ObjectId[];
+  
+
+  @Prop({
+    required: false
+  })
+  kakaoMapUrl: string
+
+  @Prop({
+    required: false,
+  })
+  kakaoMapDeepLink: string;
+
+  @Prop({
+    required: false,
+  })
+  naverMapUrl: string;
+
+  @Prop({
+    required: false,
+  })
+  naverMapDeepLink: string;
+
+  @Prop({
+    required: false,
+  })
+  googleMapUrl: string;
+
+  @Prop({
+    required: false,
+  })
+  googleMapDeepLink: string;
 }
 
 export const ramenyaSchema = SchemaFactory.createForClass(ramenya);
