@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   UploadedFiles,
@@ -23,6 +24,7 @@ import { createReviewReqDTO } from './dto/req/createReview.req.dto';
 import { Public } from 'src/common/decorators/public.decorator';
 import { getRamenyaReviewsResDTO } from './dto/res/getRamenyaReviews.res.dto';
 import { getRamenyaReviewImagesResDTO } from 'src/review/dto/res/getRamenyaReviewImages.res.dto';
+import { updateReviewReqDTO } from './dto/req/updateReview.req.dto';
 
 @Controller('review')
 export class ReviewController {
@@ -111,5 +113,21 @@ export class ReviewController {
     @Param('ramenyaId') ramenyaId: string,
   ): Promise<getRamenyaReviewImagesResDTO> {
     return this.reviewService.getRamenyaReviewImages(ramenyaId);
+  }
+
+  @ApiOperation({
+    summary: '라멘야 리뷰 수정',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBearerAuth('accessToken')
+  @UseInterceptors(FilesInterceptor('reviewImages'))
+  @Patch(':reviewId')
+  updateReview(
+    @User() user: JwtPayload,
+    @Param('reviewId') reviewId: string,
+    @Body() dto: updateReviewReqDTO,
+    @UploadedFiles() reviewImages: Express.Multer.File[],
+  ) {
+    return this.reviewService.updateReview(user, reviewId, dto, reviewImages);
   }
 }
