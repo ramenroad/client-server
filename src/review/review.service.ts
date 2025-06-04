@@ -15,6 +15,7 @@ import { ramenya } from 'schema/ramenya.schema';
 import { createReviewResDTO } from './dto/res/createReview.res.dto';
 import { getRamenyaReviewsResDTO } from './dto/res/getRamenyaReviews.res.dto';
 import { getRamenyaReviewImagesResDTO } from './dto/res/getRamenyaReviewImages.res.dto';
+import { updateReviewReqDTO } from './dto/req/updateReview.req.dto';
 
 @Injectable()
 export class ReviewService {
@@ -194,5 +195,78 @@ export class ReviewService {
     };
 
     return response;
+  }
+
+  async updateReview(user: JwtPayload, reviewId: string, dto: updateReviewReqDTO, reviewImages: Express.Multer.File[]) {
+    
+    const prevReview = await this.reviewModel.findById(reviewId);
+    const ramenya = await this.ramenyaModel.findById(prevReview.ramenyaId);
+
+    if (!review) {
+      throw new NotFoundException('리뷰 정보 조회 실패');
+    }
+
+    if (String(prevReview.userId) != user.id) {
+      throw new ForbiddenException('리뷰 수정 권한 없음');
+    }
+    
+    //이미지 s3에 업로드
+    const reviewImagesUrls = [];
+
+    for (const image of reviewImages) {
+      const url = await this.commonService.uploadImageFileToS3(
+        'images/reviews/',
+        image.originalname,
+        image,
+      );
+      reviewImagesUrls.push(url);
+    }
+
+    const transactionSession = await this.connection.startSession();
+    const menusArray = dto.menus.split(',').map((item) => item.trim());
+
+    try {
+      transactionSession.startTransaction();
+      const updatedReview = await this.reviewModel.findByIdAndUpdate(reviewId, {
+        rating: dto.rating,
+        menus: menusArray,
+        review: dto.review,
+        reviewImageUrls: reviewImagesUrls,
+      });
+
+      //라멘야 정보 업데이트
+      const prevRating =
+        (ramenya.rating * ramenya.reviewCount - Number(prevReview.rating)) /
+        (ramenya.reviewCount - 1);
+
+      const newRating =
+        (ramenya.rating * ramenya.reviewCount + Number(dto.rating)) /
+        (ramenya.reviewCount + 1);
+
+      await this.ramenyaModel.findByIdAndUpdate(ramenya._id, {
+        rating: parseFloat(newRating.toFixed(3)),
+      });
+
+      //s3에서 기존 사진들 삭제
+      //보안 상 삭제 로직 주석처리 (불필요한 사진 업로드 등 문제 발생 시 저장되었던 이미지 확인해야함)
+      /* if (prevReview.reviewImageUrls.length > 0) {
+        const s3Keys = prevReview.reviewImageUrls.map(url => {
+          const urlObj = new URL(url);
+          return urlObj.pathname.substring(1); // 앞의 '/' 제거
+        });
+
+        await this.commonService.deleteObjectsFromS3(s3Keys);
+      } */
+
+      await transactionSession.commitTransaction();
+      return;
+    } catch (error) {
+      console.log(error);
+      await transactionSession.abortTransaction();
+      throw new InternalServerErrorException('리뷰 수정 트랜잭션 실패');
+    } finally {
+      await transactionSession.endSession();
+    }
+    
   }
 }

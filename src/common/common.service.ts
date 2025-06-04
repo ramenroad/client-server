@@ -72,4 +72,27 @@ export class CommonService {
       throw new InternalServerErrorException('WebP 변환 실패');
     }
   }
+
+  async deleteObjectFromS3(path: string, name: string) {
+    try {
+      await this.s3.deleteObject({
+        Bucket: this.S3_BUCKET_NAME,
+        Key: path + name + '.webp',
+      }).promise();
+    } catch (error) {
+      throw new InternalServerErrorException('S3 이미지 삭제 실패');
+    }
+  }
+  async deleteObjectsFromS3(paths: string[]) {
+    try {
+      await this.s3.deleteObjects({
+        Bucket: this.S3_BUCKET_NAME,
+        Delete: {
+          Objects: paths.map((path) => ({ Key: path })),
+        },
+      }).promise();
+    } catch (error) {
+      throw new InternalServerErrorException('S3 이미지 삭제 실패');
+    }
+  }
 }
