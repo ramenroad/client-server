@@ -197,8 +197,12 @@ export class ReviewService {
     return response;
   }
 
-  async updateReview(user: JwtPayload, reviewId: string, dto: updateReviewReqDTO, reviewImages: Express.Multer.File[]) {
-    
+  async updateReview(
+    user: JwtPayload,
+    reviewId: string,
+    dto: updateReviewReqDTO,
+    reviewImages: Express.Multer.File[],
+  ) {
     const prevReview = await this.reviewModel.findById(reviewId);
     const ramenya = await this.ramenyaModel.findById(prevReview.ramenyaId);
 
@@ -209,7 +213,7 @@ export class ReviewService {
     if (String(prevReview.userId) != user.id) {
       throw new ForbiddenException('리뷰 수정 권한 없음');
     }
-    
+
     //이미지 s3에 업로드
     const reviewImagesUrls = [];
 
@@ -267,6 +271,5 @@ export class ReviewService {
     } finally {
       await transactionSession.endSession();
     }
-    
   }
 }
