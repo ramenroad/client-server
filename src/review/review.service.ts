@@ -16,6 +16,8 @@ import { createReviewResDTO } from './dto/res/createReview.res.dto';
 import { getRamenyaReviewsResDTO } from './dto/res/getRamenyaReviews.res.dto';
 import { getRamenyaReviewImagesResDTO } from './dto/res/getRamenyaReviewImages.res.dto';
 import { updateReviewReqDTO } from './dto/req/updateReview.req.dto';
+import { getMyReviewsResDTO } from './dto/res/getMyReviews.res.dto';
+import { getReviewResDTO } from './dto/res/getReview.res.dto';
 
 @Injectable()
 export class ReviewService {
@@ -271,5 +273,44 @@ export class ReviewService {
     } finally {
       await transactionSession.endSession();
     }
+  }
+
+  async getMyReviews(user: JwtPayload): Promise<getMyReviewsResDTO> {
+    const reviews = await this.reviewModel
+      .find({ userId: user.id })
+      .select(
+        '_id ramenyaId rating review reviewImageUrls createdAt updatedAt menus',
+      )
+      .populate({ path: 'ramenyaId', select: 'name' })
+      .lean();
+
+    const response = {
+      reviewCount: reviews.length,
+      reviews: reviews,
+    };
+
+    return response;
+  }
+
+  async getReview(
+    user: JwtPayload,
+    reviewId: string,
+  ): Promise<getReviewResDTO> {
+    const review = await this.reviewModel
+      .findById(reviewId)
+      .select(
+        '_id ramenyaId userId rating review reviewImageUrls createdAt updatedAt menus',
+      )
+      .populate({ path: 'ramenyaId', select: 'name' });
+
+    if (!review) {
+      throw new NotFoundException('리뷰 정보 조회 실패');
+    }
+
+    if (String(review.userId) != user.id) {
+      throw new ForbiddenException('리뷰 조회 권한 없음');
+    }
+
+    return review;
   }
 }
