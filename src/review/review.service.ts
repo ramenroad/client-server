@@ -217,7 +217,7 @@ export class ReviewService {
     }
 
     //이미지 s3에 업로드
-    const reviewImagesUrls = [];
+    const reviewImagesUrls = dto.reviewImageUrls;
 
     for (const image of reviewImages) {
       const url = await this.commonService.uploadImageFileToS3(
@@ -225,6 +225,11 @@ export class ReviewService {
         image.originalname,
         image,
       );
+
+      if (url instanceof Error) {
+        throw new InternalServerErrorException('S3 이미지 업로드 실패');
+      }
+
       reviewImagesUrls.push(url);
     }
 
