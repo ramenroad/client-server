@@ -29,7 +29,12 @@ export class updateReviewReqDTO {
     description: '리뷰 이미지 urls / 쉼표로 구분해서 string으로 보내주세요',
     required: false,
   })
-  @Transform(({ value }) => value.split(','))
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      return value.trim() === '' ? [] : value.split(',').filter((v) => v !== '');
+    }
+    return value;
+  })
   reviewImageUrls?: string[];
 
   @ApiProperty({
