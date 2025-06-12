@@ -25,7 +25,7 @@ export class updateReviewReqDTO {
   menus: string;
 
   @ApiProperty({
-    type: 'array',
+    type: 'string',
     description: '리뷰 이미지 urls / 쉼표로 구분해서 string으로 보내주세요',
     required: false,
   })
