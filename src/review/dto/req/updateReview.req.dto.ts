@@ -30,7 +30,7 @@ export class updateReviewReqDTO {
     required: false,
   })
   @Transform(({ value }) => value.split(','))
-  reviewImageUrls?: string;
+  reviewImageUrls?: string[];
 
   @ApiProperty({
     required: false,
