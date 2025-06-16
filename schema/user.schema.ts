@@ -31,6 +31,12 @@ export class user extends Document {
   kakaoId: string;
 
   @Prop({
+    required: true,
+    default: true,
+  })
+  isPublic: boolean;
+
+  @Prop({
     required: false,
   })
   refreshToken: string;
