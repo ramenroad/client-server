@@ -133,18 +133,26 @@ export class ReviewController {
     return this.reviewService.updateReview(user, reviewId, dto, reviewImages);
   }
 
+  @Public()
   @ApiOperation({
-    summary: '내가 작성한 리뷰 불러오기',
+    summary: '유저가 작성한 리뷰 불러오기',
   })
   @ApiResponse({
     status: 200,
     description: '내가 작성한 리뷰 불러오기 성공',
     type: getMyReviewsResDTO,
   })
-  @ApiBearerAuth('accessToken')
-  @Get('/my')
-  getMyReviews(@User() user: JwtPayload) {
-    return this.reviewService.getMyReviews(user);
+  @ApiResponse({
+    status: 404,
+    description: '해당 userId에 대한 유저를 찾을 수 없는 경우',
+  })
+  @ApiResponse({
+    status: 403,
+    description: '해당 유저의 프로필이 비공개인 경우',
+  })
+  @Get('/:userId/reviews')
+  getUserReviews(@Param('userId') userId: string, @Query('page') page: number, @Query('limit') limit: number) {
+    return this.reviewService.getUserReviews(userId, page, limit);
   }
 
   @ApiOperation({
