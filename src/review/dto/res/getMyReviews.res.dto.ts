@@ -71,7 +71,7 @@ class Review {
   menus: string[];
 }
 
-export class getMyReviewsResDTO {
+export class getUserReviewsResDTO {
   @ApiProperty({
     description: '리뷰 총 개수',
     example: 11,

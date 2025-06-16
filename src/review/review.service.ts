@@ -16,7 +16,7 @@ import { createReviewResDTO } from './dto/res/createReview.res.dto';
 import { getRamenyaReviewsResDTO } from './dto/res/getRamenyaReviews.res.dto';
 import { getRamenyaReviewImagesResDTO } from './dto/res/getRamenyaReviewImages.res.dto';
 import { updateReviewReqDTO } from './dto/req/updateReview.req.dto';
-import { getMyReviewsResDTO } from './dto/res/getMyReviews.res.dto';
+import { getUserReviewsResDTO } from './dto/res/getMyReviews.res.dto';
 import { getReviewResDTO } from './dto/res/getReview.res.dto';
 import { user } from 'schema/user.schema';
 
@@ -184,7 +184,7 @@ export class ReviewService {
     }
   }
 
-  async getRamenyaReview(ramenyaId: string, page: number, limit: number) {
+  async getRamenyaReview(ramenyaId: string, page: number, limit: number): Promise<getRamenyaReviewsResDTO> {
     const total = await this.reviewModel.countDocuments({ ramenyaId });
     const lastPage = Math.ceil(total / limit);
 
@@ -339,7 +339,7 @@ export class ReviewService {
     }
   }
 
-  async getUserReviews(userId: string, page: number, limit: number): Promise<getMyReviewsResDTO> {
+  async getUserReviews(userId: string, page: number, limit: number): Promise<getUserReviewsResDTO> {
 
     const total = await this.reviewModel.countDocuments({ userId });
     const lastPage = Math.ceil(total / limit);

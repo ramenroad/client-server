@@ -25,7 +25,7 @@ import { Public } from 'src/common/decorators/public.decorator';
 import { getRamenyaReviewsResDTO } from './dto/res/getRamenyaReviews.res.dto';
 import { getRamenyaReviewImagesResDTO } from 'src/review/dto/res/getRamenyaReviewImages.res.dto';
 import { updateReviewReqDTO } from './dto/req/updateReview.req.dto';
-import { getMyReviewsResDTO } from './dto/res/getMyReviews.res.dto';
+import { getUserReviewsResDTO } from './dto/res/getMyReviews.res.dto';
 import { getReviewResDTO } from './dto/res/getReview.res.dto';
 
 @Controller('review')
@@ -95,9 +95,9 @@ export class ReviewController {
   @Get('')
   getRamenyaReviews(
     @Query('ramenyaId') ramenyaId: string,
-    @Query('page') page: number,
-    @Query('limit') limit: number,
-  ) {
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+  ): Promise<getRamenyaReviewsResDTO> {
     return this.reviewService.getRamenyaReview(ramenyaId, page, limit);
   }
 
@@ -140,7 +140,7 @@ export class ReviewController {
   @ApiResponse({
     status: 200,
     description: '내가 작성한 리뷰 불러오기 성공',
-    type: getMyReviewsResDTO,
+    type: getUserReviewsResDTO,
   })
   @ApiResponse({
     status: 404,
@@ -151,7 +151,7 @@ export class ReviewController {
     description: '해당 유저의 프로필이 비공개인 경우',
   })
   @Get('/:userId/reviews')
-  getUserReviews(@Param('userId') userId: string, @Query('page') page: number, @Query('limit') limit: number) {
+  getUserReviews(@Param('userId') userId: string, @Query('page') page?: number, @Query('limit') limit?: number):Promise<getUserReviewsResDTO>  {
     return this.reviewService.getUserReviews(userId, page, limit);
   }
 
