@@ -10,6 +10,7 @@ import { user } from 'schema/user.schema';
 import { JwtPayload } from 'src/common/types/jwtpayloadtype';
 import { getMyInfoResDTO } from './dto/res/getMyInfo.res.dto';
 import { CommonService } from 'src/common/common.service';
+import { updateIsPublicReqDTO } from './dto/req/updateIsPublic.req.dto';
 
 @Injectable()
 export class MypageService {
@@ -55,6 +56,15 @@ export class MypageService {
     } catch (error) {
       throw new InternalServerErrorException('프로필 사진 변경 실패');
     }
+
+    return;
+  }
+
+  async updateIsPublic(user: JwtPayload, dto: updateIsPublicReqDTO) {
+    
+    await this.userModel.findByIdAndUpdate(user.id, {
+      isPublic: dto.isPublic,
+    });
 
     return;
   }

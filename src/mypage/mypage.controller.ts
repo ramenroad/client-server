@@ -19,6 +19,7 @@ import {
 import { JwtPayload } from 'src/common/types/jwtpayloadtype';
 import { getMyInfoResDTO } from './dto/res/getMyInfo.res.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { updateIsPublicReqDTO } from './dto/req/updateIsPublic.req.dto';
 
 @Controller('mypage')
 export class MypageController {
@@ -82,5 +83,21 @@ export class MypageController {
     @UploadedFile() profileImageFile: Express.Multer.File,
   ): Promise<void> {
     return this.mypageService.updateProfileImage(user, profileImageFile);
+  }
+
+  @ApiOperation({
+    summary: '프로필 공개 여부 변경하기',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '프로필 공개 여부 변경 성공',
+  })
+  @ApiBearerAuth('accessToken')
+  @Patch('/isPublic')
+  updateIsPublic(
+    @User() user: JwtPayload,
+    @Body() dto: updateIsPublicReqDTO,
+  ): Promise<void> {
+    return this.mypageService.updateIsPublic(user, dto);
   }
 }
