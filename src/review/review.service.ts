@@ -339,17 +339,34 @@ export class ReviewService {
     }
   }
 
-  async getMyReviews(user: JwtPayload): Promise<getMyReviewsResDTO> {
+  async getUserReviews(userId: string, page: number, limit: number): Promise<getMyReviewsResDTO> {
+
+    const total = await this.reviewModel.countDocuments({ userId });
+    const lastPage = Math.ceil(total / limit);
+    const user = await this.userModel.findById(userId).select('isPublic reviewCount');
+
+    if (!user) {
+      throw new NotFoundException('유저 정보 조회 실패');
+    }
+
+    if (user.isPublic == false) {
+      throw new ForbiddenException('유저 프로필 미공개');
+    }
+
     const reviews = await this.reviewModel
       .find({ userId: user.id })
       .select(
         '_id ramenyaId rating review reviewImageUrls createdAt updatedAt menus',
       )
       .populate({ path: 'ramenyaId', select: 'name' })
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
       .lean();
 
     const response = {
-      reviewCount: reviews.length,
+      reviewCount: user.reviewCount,
+      lastPage: lastPage,
       reviews: reviews,
     };
 
