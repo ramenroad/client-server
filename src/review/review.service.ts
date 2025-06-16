@@ -294,7 +294,7 @@ export class ReviewService {
         (ramenya.reviewCount + 1);
 
       await this.ramenyaModel.findByIdAndUpdate(ramenya._id, {
-        rating: parseFloat(newRating.toFixed(3)),
+        rating: parseFloat(newRating.toFixed(10)),
       });
 
       //유저 정보 업데이트
