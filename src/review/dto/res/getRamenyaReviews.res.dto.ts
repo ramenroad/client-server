@@ -12,6 +12,12 @@ class user {
 
   @ApiProperty()
   profileImageUrl: string;
+
+  @ApiProperty()
+  avgReviewRating: number;
+
+  @ApiProperty()
+  reviewCount: number;
 }
 
 export class review {
