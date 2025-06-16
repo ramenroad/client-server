@@ -40,6 +40,16 @@ export class user extends Document {
     required: false,
   })
   refreshToken: string;
+
+  @Prop({
+    default: 0,
+  })
+  avgReviewRating: number;
+
+  @Prop({
+    default: 0,
+  })
+  reviewCount: number;
 }
 
 export const userSchema = SchemaFactory.createForClass(user);
