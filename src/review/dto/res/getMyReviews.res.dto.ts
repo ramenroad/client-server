@@ -71,12 +71,18 @@ class Review {
   menus: string[];
 }
 
-export class getMyReviewsResDTO {
+export class getUserReviewsResDTO {
   @ApiProperty({
     description: '리뷰 총 개수',
     example: 11,
   })
   reviewCount: number;
+
+  @ApiProperty({
+    description: '마지막 페이지 (페이지네이션)',
+    example: 1,
+  })
+  lastPage: number;
 
   @ApiProperty({
     description: '리뷰 목록',

@@ -31,9 +31,25 @@ export class user extends Document {
   kakaoId: string;
 
   @Prop({
+    required: true,
+    default: true,
+  })
+  isPublic: boolean;
+
+  @Prop({
     required: false,
   })
   refreshToken: string;
+
+  @Prop({
+    default: 0,
+  })
+  avgReviewRating: number;
+
+  @Prop({
+    default: 0,
+  })
+  reviewCount: number;
 }
 
 export const userSchema = SchemaFactory.createForClass(user);
