@@ -18,6 +18,7 @@ import { getRamenyaReviewImagesResDTO } from './dto/res/getRamenyaReviewImages.r
 import { updateReviewReqDTO } from './dto/req/updateReview.req.dto';
 import { getMyReviewsResDTO } from './dto/res/getMyReviews.res.dto';
 import { getReviewResDTO } from './dto/res/getReview.res.dto';
+import { user } from 'schema/user.schema';
 
 @Injectable()
 export class ReviewService {
@@ -25,6 +26,7 @@ export class ReviewService {
     @InjectModel('review')
     private readonly reviewModel: Model<review>,
     @InjectModel('ramenya') private readonly ramenyaModel: Model<ramenya>,
+    @InjectModel('user') private readonly userModel: Model<user>,
     private readonly commonService: CommonService,
     @InjectConnection() private readonly connection: mongoose.Connection,
   ) {}
@@ -81,7 +83,25 @@ export class ReviewService {
         $inc: {
           reviewCount: 1,
         },
-        rating: parseFloat(newRating.toFixed(3)),
+        rating: parseFloat(newRating.toFixed(10)),
+      });
+
+      const userByUserId = await this.userModel.findById(user.id);
+
+      if (!userByUserId) {
+        throw new InternalServerErrorException('유저 정보 조회 실패');
+      }
+
+      const userNewAvgRating =
+        (userByUserId.avgReviewRating * userByUserId.reviewCount + Number(dto.rating)) /
+        (userByUserId.reviewCount + 1);
+
+      //유저 정보 업데이트
+      await this.userModel.findByIdAndUpdate(user.id, {
+        $inc: {
+          reviewCount: 1,
+        },
+        avgReviewRating: parseFloat(userNewAvgRating.toFixed(10)),
       });
 
       await transactionSession.commitTransaction();
@@ -135,6 +155,25 @@ export class ReviewService {
         },
       });
 
+
+      //유저 정보 업데이트
+      const userByUserId = await this.userModel.findById(review.userId);
+
+      if (!userByUserId) {
+        throw new InternalServerErrorException('유저 정보 조회 실패');
+      }
+      
+      const userNewAvgRating =
+        (userByUserId.avgReviewRating * userByUserId.reviewCount - review.rating) /
+        (userByUserId.reviewCount - 1);
+
+      await this.userModel.findByIdAndUpdate(review.userId, {
+        $inc: {
+          reviewCount: -1,
+        },
+        avgReviewRating: parseFloat(userNewAvgRating.toFixed(10)),
+      });
+
       await transactionSession.commitTransaction();
       return;
     } catch (error) {
@@ -163,7 +202,7 @@ export class ReviewService {
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
-      .populate({ path: 'userId', select: 'nickname profileImageUrl' });
+      .populate({ path: 'userId', select: 'nickname profileImageUrl avgReviewRating reviewCount' });
 
     const response = {
       lastPage: lastPage,
@@ -257,6 +296,26 @@ export class ReviewService {
       await this.ramenyaModel.findByIdAndUpdate(ramenya._id, {
         rating: parseFloat(newRating.toFixed(3)),
       });
+
+      //유저 정보 업데이트
+      //기존 리뷰 별점과 수정한 리뷰의 별점이 다른 경우에만 업데이트
+      if (prevReview.rating != dto.rating) {
+        
+        const userByUserId = await this.userModel.findById(prevReview.userId);
+
+        if (!userByUserId) {
+          throw new InternalServerErrorException('유저 정보 조회 실패');
+        }
+
+        const userNewAvgRating = 
+          (userByUserId.avgReviewRating * userByUserId.reviewCount - Number(prevReview.rating) + Number(dto.rating)) /
+          (userByUserId.reviewCount);
+
+        await this.userModel.findByIdAndUpdate(prevReview.userId, {
+          avgReviewRating: parseFloat(userNewAvgRating.toFixed(10)),
+        });
+      }
+    
 
       //s3에서 기존 사진들 삭제
       //보안 상 삭제 로직 주석처리 (불필요한 사진 업로드 등 문제 발생 시 저장되었던 이미지 확인해야함)
