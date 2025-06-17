@@ -187,21 +187,7 @@ export class ReviewService {
 
   async getRamenyaReview(ramenyaId: string, page?: number, limit?: number): Promise<getRamenyaReviewsResDTO> {
     const total = await this.reviewModel.countDocuments({ ramenyaId });
-
-    if (total == 0) {
-      return {
-        lastPage: 0,
-        reviews: [],
-      };
-    }
-
     const lastPage = Math.ceil(total / limit);
-
-    if (lastPage < page) {
-      throw new NotAcceptableException(
-        `해당 limit의 최대 페이지 수는 ${total} 입니다.`,
-      );
-    }
 
     const reviews = await this.reviewModel
       .find({ ramenyaId })
