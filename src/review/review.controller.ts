@@ -25,7 +25,7 @@ import { Public } from 'src/common/decorators/public.decorator';
 import { getRamenyaReviewsResDTO } from './dto/res/getRamenyaReviews.res.dto';
 import { getRamenyaReviewImagesResDTO } from 'src/review/dto/res/getRamenyaReviewImages.res.dto';
 import { updateReviewReqDTO } from './dto/req/updateReview.req.dto';
-import { getUserReviewsResDTO } from './dto/res/getMyReviews.res.dto';
+import { getUserReviewsResDTO } from './dto/res/getUserReviews.res.dto';
 import { getReviewResDTO } from './dto/res/getReview.res.dto';
 
 @Controller('review')
@@ -140,7 +140,7 @@ export class ReviewController {
   @ApiResponse({
     status: 200,
     description: '내가 작성한 리뷰 불러오기 성공',
-    type: getUserReviewsResDTO,
+    type: getUserReviewsResDTO
   })
   @ApiResponse({
     status: 404,
