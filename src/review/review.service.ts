@@ -185,8 +185,16 @@ export class ReviewService {
     }
   }
 
-  async getRamenyaReview(ramenyaId: string, page: number, limit: number): Promise<getRamenyaReviewsResDTO> {
+  async getRamenyaReview(ramenyaId: string, page?: number, limit?: number): Promise<getRamenyaReviewsResDTO> {
     const total = await this.reviewModel.countDocuments({ ramenyaId });
+
+    if (total == 0) {
+      return {
+        lastPage: 0,
+        reviews: [],
+      };
+    }
+
     const lastPage = Math.ceil(total / limit);
 
     if (lastPage < page) {
