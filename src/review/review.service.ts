@@ -19,6 +19,7 @@ import { updateReviewReqDTO } from './dto/req/updateReview.req.dto';
 import { getUserReviewsResDTO } from './dto/res/getUserReviews.res.dto';
 import { getReviewResDTO } from './dto/res/getReview.res.dto';
 import { user } from 'schema/user.schema';
+import { getMyReviewsResDTO } from './dto/res/getMyReviews.res.dto';
 
 @Injectable()
 export class ReviewService {
@@ -393,5 +394,32 @@ export class ReviewService {
     }
 
     return review;
+  }
+
+  async getMyReviews(user: JwtPayload, page: number, limit: number): Promise<getMyReviewsResDTO> {
+
+    const total = await this.reviewModel.countDocuments({ userId: user.id });
+    const lastPage = Math.ceil(total / limit);
+    const userInfo = await this.userModel.findById(user.id).select('isPublic reviewCount');
+
+    const reviews = await this.reviewModel
+      .find({ userId: user.id })
+      .select(
+        '_id ramenyaId rating review reviewImageUrls createdAt updatedAt menus',
+      )
+      .populate({ path: 'ramenyaId', select: 'name' })
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .lean();
+
+    const response = {
+      reviewCount: userInfo.reviewCount,
+      lastPage: lastPage,
+      reviews: reviews,
+    };
+
+    return response;
+
   }
 }
