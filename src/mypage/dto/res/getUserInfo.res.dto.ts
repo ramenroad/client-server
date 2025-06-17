@@ -31,8 +31,8 @@ export class getUserInfoResDTO {
   isPublic: boolean;
 
   @ApiProperty({
-    description: '30일간 작성한 리뷰 갯수',
+    description: '이번달 작성한 리뷰 갯수',
     example: 10,
   })
-  reviewCount30Days: number;
+  currentMonthReviewCount: number;
 }
