@@ -27,6 +27,7 @@ import { getRamenyaReviewImagesResDTO } from 'src/review/dto/res/getRamenyaRevie
 import { updateReviewReqDTO } from './dto/req/updateReview.req.dto';
 import { getUserReviewsResDTO } from './dto/res/getUserReviews.res.dto';
 import { getReviewResDTO } from './dto/res/getReview.res.dto';
+import { getMyReviewsResDTO } from './dto/res/getMyReviews.res.dto';
 
 @Controller('review')
 export class ReviewController {
@@ -139,7 +140,7 @@ export class ReviewController {
   })
   @ApiResponse({
     status: 200,
-    description: '내가 작성한 리뷰 불러오기 성공',
+    description: '리뷰 불러오기 성공',
     type: getUserReviewsResDTO
   })
   @ApiResponse({
@@ -153,6 +154,20 @@ export class ReviewController {
   @Get('/:userId/reviews')
   getUserReviews(@Param('userId') userId: string, @Query('page') page?: number, @Query('limit') limit?: number):Promise<getUserReviewsResDTO>  {
     return this.reviewService.getUserReviews(userId, page, limit);
+  }
+
+  @ApiOperation({
+    summary: '내가 작성한 리뷰 불러오기',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '리뷰 불러오기 성공',
+    type: getMyReviewsResDTO
+  })
+  @ApiBearerAuth('accessToken')
+  @Get('/my/reviews')
+  getMyReviews(@User() user: JwtPayload, @Query('page') page?: number, @Query('limit') limit?: number):Promise<getMyReviewsResDTO>  {
+    return this.reviewService.getMyReviews(user, page, limit);
   }
 
   @ApiOperation({
