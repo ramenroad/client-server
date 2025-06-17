@@ -15,7 +15,7 @@ class RamenyaInfo {
   name: string;
 }
 
-class Review {
+class UserReview {
   @ApiProperty({
     description: '리뷰 ID',
     example: '67d2684a09134d50cfcdd3d7',
@@ -86,8 +86,8 @@ export class getUserReviewsResDTO {
 
   @ApiProperty({
     description: '리뷰 목록',
-    type: Review,
+    type: UserReview,
     isArray: true,
   })
-  reviews: unknown | Review[];
+  reviews: unknown | UserReview[];
 }
