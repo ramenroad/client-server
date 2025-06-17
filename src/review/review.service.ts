@@ -16,7 +16,7 @@ import { createReviewResDTO } from './dto/res/createReview.res.dto';
 import { getRamenyaReviewsResDTO } from './dto/res/getRamenyaReviews.res.dto';
 import { getRamenyaReviewImagesResDTO } from './dto/res/getRamenyaReviewImages.res.dto';
 import { updateReviewReqDTO } from './dto/req/updateReview.req.dto';
-import { getUserReviewsResDTO } from './dto/res/getMyReviews.res.dto';
+import { getUserReviewsResDTO } from './dto/res/getUserReviews.res.dto';
 import { getReviewResDTO } from './dto/res/getReview.res.dto';
 import { user } from 'schema/user.schema';
 
