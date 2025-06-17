@@ -93,7 +93,7 @@ export class MypageService {
       avgReviewRating: user.avgReviewRating,
       reviewCount: user.reviewCount,
       isPublic: user.isPublic,
-      reviewCount30Days: reviewCount30Days,
+      currentMonthReviewCount: reviewCount30Days,
     }
 
     return response;
