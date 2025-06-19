@@ -1,14 +1,46 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { RamenyaService } from './ramenya.service';
 import { getRamenyasResDTO } from './dto/res/getRamenyas.res.dto';
 import { getRamenyaByIdResDTO } from './dto/res/getRamenyaById.res.dto';
 import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { getRamenyaGroupsResDTO } from './dto/res/getRamenyaGroups.res.dto';
 import { Public } from 'src/common/decorators/public.decorator';
+import { getNearByRamenyaResDTO } from './dto/res/getNearByRamenya.res.dto';
 
 @Controller({ path: 'ramenya', version: '1' })
 export class RamenyaController {
   constructor(private readonly ramenyaService: RamenyaService) {}
+
+  @Public()
+  @ApiOperation({
+    summary: '라멘야 주변 조회',
+    description: 'radius 값에 따라 주변 라멘야 리스트를 반환합니다. review는 reviewImageUrls가 있는 review 중 최대 10개까지 반환됩니다.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '라멘야 주변 조회 성공',
+    type: getNearByRamenyaResDTO,
+  })
+  @ApiQuery({
+    name: 'latitude',
+    required: true,
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'longitude',
+    required: true,
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'radius',
+    required: true,
+    type: Number,
+    description: '반경 거리(단위: 미터)',
+  })
+  @Get('/nearby')
+  getNearByRamenya(@Query('latitude') latitude: number, @Query('longitude') longitude: number, @Query('radius') radius: number): Promise<getNearByRamenyaResDTO> {
+    return this.ramenyaService.getNearByRamenya(latitude, longitude, radius);
+  }
 
   @Public()
   @ApiOperation({
@@ -99,4 +131,5 @@ export class RamenyaController {
   getRamenyaGroups(): Promise<getRamenyaGroupsResDTO[]> {
     return this.ramenyaService.getRamenyaGroups();
   }
+  
 }
