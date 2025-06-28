@@ -77,6 +77,16 @@ export class AuthService {
       kakaoId: String(response2.data.id),
     });
 
+    //동일한 이메일로 가입된 유저가 있는지 확인
+    const existingUserByEmail = await this.userModel.findOne({
+      email: response2.data.kakao_account.email,
+      kakaoId: { $ne: String(response2.data.id) }, // 현재 카카오 ID가 아닌 다른 유저
+    });
+    
+    if (existingUserByEmail) {
+      throw new NotAcceptableException(`이메일 ${response2.data.kakao_account.email}은 이미 가입된 주소입니다.`);
+    }
+
     if (!user) {
       //존재하지 않는 경우, 유저 생성 후 토큰 발급
       let newUser;

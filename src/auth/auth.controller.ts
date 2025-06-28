@@ -30,6 +30,10 @@ export class AuthController {
     type: signInUserByKakakoResDTO,
   })
   @ApiResponse({
+    status: 406,
+    description: '이미 가입된 이메일인 경우(네이버 소셜 로그인으로 가입된 경우)',
+  })
+  @ApiResponse({
     status: 500,
     description: '사용자 정보 불러오기에 실패한 경우',
   })
@@ -54,7 +58,7 @@ export class AuthController {
   })
   @ApiResponse({
     status: 406,
-    description: '이미 가입된 이메일입니다.',
+    description: '이미 가입된 이메일입니다.(카카오 소셜 로그인으로 가입된 경우)',
   })
   @ApiResponse({
     status: 500,
