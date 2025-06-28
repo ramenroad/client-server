@@ -12,6 +12,8 @@ import { refreshAccessTokenResDTO } from './dto/res/refreshAccessToken.res.dto';
 import { JwtPayload, RtJwtPayload } from 'src/common/types/jwtpayloadtype';
 import { signInUserByNaverReqDTO } from './dto/req/signInUserByNaver.req.dto';
 import { signInUserByNaverResDTO } from './dto/res/signInUserByNaver.res.dto';
+import { signInUserByKakao406ResDTO } from './dto/res/signInUserByKakao.406.res.dto';
+import { signInUserByNaver406ResDTO } from './dto/res/signInUserByNaver.406.res.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -32,6 +34,7 @@ export class AuthController {
   @ApiResponse({
     status: 406,
     description: '이미 가입된 이메일인 경우(네이버 소셜 로그인으로 가입된 경우)',
+    type: signInUserByKakao406ResDTO,
   })
   @ApiResponse({
     status: 500,
@@ -58,7 +61,8 @@ export class AuthController {
   })
   @ApiResponse({
     status: 406,
-    description: '이미 가입된 이메일입니다.(카카오 소셜 로그인으로 가입된 경우)',
+    description: '이미 가입된 이메일인 경우.(카카오 소셜 로그인으로 가입된 경우)',
+    type: signInUserByNaver406ResDTO,
   })
   @ApiResponse({
     status: 500,
