@@ -84,7 +84,12 @@ export class AuthService {
     });
     
     if (existingUserByEmail) {
-      throw new NotAcceptableException(`이메일 ${response2.data.kakao_account.email}은 이미 가입된 주소입니다.`);
+      throw new NotAcceptableException({
+        message: `이메일 ${response2.data.kakao_account.email}은 이미 가입된 주소입니다.`,
+        email: response2.data.kakao_account.email,
+        error: 'EMAIL_ALREADY_EXISTS',
+        statusCode: 406
+      });
     }
 
     if (!user) {
@@ -328,7 +333,12 @@ export class AuthService {
     });
     
     if (existingUserByEmail) {
-      throw new NotAcceptableException(`이메일 ${response2.data.response.email}은 이미 가입된 주소입니다.`);
+      throw new NotAcceptableException({
+        message: `이메일 ${response2.data.response.email}은 이미 가입된 주소입니다.`,
+        email: response2.data.response.email,
+        error: 'EMAIL_ALREADY_EXISTS',
+        statusCode: 406
+      });
     }
 
     if (!user) {
