@@ -31,6 +31,11 @@ export class user extends Document {
   kakaoId: string;
 
   @Prop({
+    required: false,
+  })
+  naverId: string;
+
+  @Prop({
     required: true,
     default: true,
   })
