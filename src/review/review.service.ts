@@ -242,7 +242,7 @@ export class ReviewService {
     const prevReview = await this.reviewModel.findById(reviewId);
     const ramenya = await this.ramenyaModel.findById(prevReview.ramenyaId);
 
-    if (!review) {
+    if (!prevReview) {
       throw new NotFoundException('리뷰 정보 조회 실패');
     }
 
@@ -280,13 +280,9 @@ export class ReviewService {
       });
 
       //라멘야 정보 업데이트
-      const prevRating =
-        (ramenya.rating * ramenya.reviewCount - Number(prevReview.rating)) /
-        (ramenya.reviewCount - 1);
-
-      const newRating =
-        (ramenya.rating * ramenya.reviewCount + Number(dto.rating)) /
-        (ramenya.reviewCount + 1);
+      const newRating = 
+        (ramenya.rating * ramenya.reviewCount - Number(prevReview.rating) + Number(dto.rating)) /
+        ramenya.reviewCount;
 
       await this.ramenyaModel.findByIdAndUpdate(ramenya._id, {
         rating: parseFloat(newRating.toFixed(10)),
