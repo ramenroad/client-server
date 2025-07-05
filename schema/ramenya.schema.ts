@@ -43,6 +43,22 @@ export class ramenya extends Document {
   })
   longitude: number;
 
+  @Prop({
+  type: {
+    type: String,
+    enum: ['Point'],
+    default: 'Point',
+  },
+  coordinates: {
+    type: [Number],
+    required: true,
+  },
+  })
+  location: {
+    type: 'Point';
+    coordinates: [number, number]; // [lng, lat]
+  }
+
   @Prop()
   contactNumber: string;
 
@@ -142,3 +158,4 @@ export class ramenya extends Document {
 }
 
 export const ramenyaSchema = SchemaFactory.createForClass(ramenya);
+ramenyaSchema.index({ location: '2dsphere' });
