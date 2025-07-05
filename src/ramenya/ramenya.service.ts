@@ -92,30 +92,30 @@ export class RamenyaService {
     return ramenyaGroups;
   }
 
-  async getNearByRamenya(latitude: number, longitude: number, radius: number): Promise<getNearByRamenyaResDTO> {
-
-    const ramenyas = await this.ramenyaModel.find({
-      location: {
-        $near: {
-          $geometry: { 
-            type: 'Point', 
-            coordinates: [longitude, latitude] 
+  async getNearByRamenya(
+    latitude: number,
+    longitude: number,
+    radius: number,
+  ): Promise<getNearByRamenyaResDTO> {
+    const ramenyas = await this.ramenyaModel
+      .find({
+        location: {
+          $near: {
+            $geometry: {
+              type: 'Point',
+              coordinates: [longitude, latitude],
+            },
+            $maxDistance: radius,
           },
-          $maxDistance: radius,
         },
-      },
-    }).select('name thumbnailUrl genre region address businessHours longitude latitude rating reviewCount')
-    .populate({
-      path: 'reviews',
-      select: 'reviewImageUrls',
-      options: { limit: 10, sort: { createdAt: -1 }},
-      match: {
-        reviewImageUrls: { $ne: [], $exists: true }
-      }
-    });
+      })
+      .select(
+        'name thumbnailUrl genre region address businessHours longitude latitude rating reviewCount',
+      )
+      .sort({ rating: -1 });
 
     return {
       ramenyas: ramenyas,
-    }
+    };
   }
 }
