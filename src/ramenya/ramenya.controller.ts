@@ -13,12 +13,13 @@ export class RamenyaController {
 
   @Public()
   @ApiOperation({
-    summary: '라멘야 주변 조회',
-    description: 'radius 값에 따라 주변 라멘야 리스트를 반환합니다. review는 reviewImageUrls가 있는 review 중 최대 10개까지 반환됩니다.',
+    summary: '주변 라멘 매장 조회',
+    description:
+      'radius 값에 따라 주변 라멘야 리스트를 반환합니다. 라멘매장 리스트는 평점 순으로 정렬됩니다.',
   })
   @ApiResponse({
     status: 200,
-    description: '라멘야 주변 조회 성공',
+    description: '주변 라멘매장 조회 성공',
     type: getNearByRamenyaResDTO,
   })
   @ApiQuery({
@@ -38,7 +39,11 @@ export class RamenyaController {
     description: '반경 거리(단위: 미터)',
   })
   @Get('/nearby')
-  getNearByRamenya(@Query('latitude') latitude: number, @Query('longitude') longitude: number, @Query('radius') radius: number): Promise<getNearByRamenyaResDTO> {
+  getNearByRamenya(
+    @Query('latitude') latitude: number,
+    @Query('longitude') longitude: number,
+    @Query('radius') radius: number,
+  ): Promise<getNearByRamenyaResDTO> {
     return this.ramenyaService.getNearByRamenya(latitude, longitude, radius);
   }
 
@@ -131,5 +136,4 @@ export class RamenyaController {
   getRamenyaGroups(): Promise<getRamenyaGroupsResDTO[]> {
     return this.ramenyaService.getRamenyaGroups();
   }
-  
 }
