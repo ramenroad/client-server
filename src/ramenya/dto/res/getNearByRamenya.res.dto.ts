@@ -1,18 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class Review {
-  @ApiProperty({
-    type: String,
-  })
-  _id: unknown | string;
-
-  @ApiProperty({
-    type: String,
-    isArray: true,
-  })
-  reviewImageUrls: string[];
-}
-
 export class BusinessHour {
   @ApiProperty({
     description: '요일',
@@ -91,7 +78,8 @@ export class Ramenya {
 
   @ApiProperty({
     description: '썸네일 이미지 URL',
-    example: 'https://ramenroad-prod.s3.amazonaws.com/images/ramenyas/1736997285983라멘롱시즌thumbnail',
+    example:
+      'https://ramenroad-prod.s3.amazonaws.com/images/ramenyas/1736997285983라멘롱시즌thumbnail',
   })
   thumbnailUrl: string;
 
@@ -106,12 +94,6 @@ export class Ramenya {
     example: 0,
   })
   reviewCount: number;
-
-  @ApiProperty({
-    type: Review,
-    isArray: true,
-  })
-  reviews: unknown | Review[];
 }
 
 export class getNearByRamenyaResDTO {
