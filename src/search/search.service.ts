@@ -147,4 +147,31 @@ export class SearchService {
       });
     }
   }
+
+  //TODO - 리턴타입
+  async getRecentSearchKeywords(user: JwtPayload) {
+    const userId = user.id;
+
+    const [searchKeywords, ramenyaNames] = await Promise.all([
+      this.searchKeywordModel
+        .find({
+          userId,
+          type: 'searchKeyword',
+          isDeleted: false,
+        })
+        .sort({ updatedAt: -1 })
+        .limit(10),
+
+      this.searchKeywordModel
+        .find({
+          userId,
+          type: 'ramenyaName',
+          isDeleted: false,
+        })
+        .sort({ updatedAt: -1 })
+        .limit(10),
+    ]);
+
+    return { searchKeywords, ramenyaNames };
+  }
 }
