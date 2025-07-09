@@ -69,4 +69,10 @@ export class SearchController {
     };
     return this.searchService.search(searchParams);
   }
+
+  @ApiBearerAuth('accessToken')
+  @Get('recent')
+  getRecentSearchKeywords(@User() user: JwtPayload) {
+    return this.searchService.getRecentSearchKeywords(user);
+  }
 }
