@@ -74,7 +74,7 @@ export class SearchController {
   }
 
   @ApiOperation({
-    summary: '최근 검색어',
+    summary: '최근 검색어 조회',
     description:
       '최근 검색어를 조회합니다. 최근 순으로 각각 최대 10개까지 조회합니다.',
   })
