@@ -14,6 +14,7 @@ import SearchParams from './interfaces/searchParam.interface';
 import { SearchResDto } from './dto/res/search.res.dto';
 import { GetRecentSearchKeywordsResDto } from './dto/res/getRecentSearchKeywords.res.dto';
 import { DeleteRecentSearchKeywordsReqDTO } from './dto/req/deleteRecentSearchKeywords.req.dto';
+import { GetAutocompleteResDto } from './dto/res/getAutocomplete.res.dto';
 
 @Controller('search')
 export class SearchController {
@@ -100,5 +101,27 @@ export class SearchController {
   @Delete('recent')
   deleteRecentSearchKeywords(@User() user: JwtPayload, @Body() body: DeleteRecentSearchKeywordsReqDTO): Promise<void>  {
     return this.searchService.deleteRecentSearchKeywords(user, body);
+  }
+
+  @ApiOperation({
+    summary: '검색 자동완성',
+    description: '검색어 입력 시 자동완성 제안을 제공합니다. 라멘 매장 이름에 대한 검색 결과와 관련있는 매장 정보를 포함합니다. 검색 결과는 검색 키워드가 앞에 있는 순으로 정렬됩니다.',
+  })
+  @ApiQuery({
+    name: 'query',
+    description: '검색어 (최소 1글자 이상)',
+    required: true,
+  })
+  @ApiResponse({
+    status: 200,
+    description: '자동완성 조회 성공',
+    type: GetAutocompleteResDto,
+  })
+  @Public()
+  @Get('autocomplete')
+  getAutocomplete(
+    @Query('query') query: string,
+  ): Promise<GetAutocompleteResDto> {
+    return this.searchService.getAutocomplete(query);
   }
 }

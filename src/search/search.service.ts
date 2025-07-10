@@ -8,6 +8,7 @@ import SearchParams from './interfaces/searchParam.interface';
 import { SearchResDto } from './dto/res/search.res.dto';
 import { GetRecentSearchKeywordsResDto } from './dto/res/getRecentSearchKeywords.res.dto';
 import { DeleteRecentSearchKeywordsReqDTO } from './dto/req/deleteRecentSearchKeywords.req.dto';
+import { GetAutocompleteResDto } from './dto/res/getAutocomplete.res.dto';
 
 @Injectable()
 export class SearchService {
@@ -20,7 +21,6 @@ export class SearchService {
   async search(params: SearchParams): Promise<SearchResDto[]> {
     const { query, userId, latitude, longitude, radius } = params;
     //검색어와 일치하는 매장 이름이 있으면 먼저 리턴
-    //TODO - atlas search 적용
     const resultsOfSearchByName = await this.ramenyaModel
       .find({
         name: query,
@@ -44,9 +44,10 @@ export class SearchService {
     //검색어 점수 쿼리
     const keywordScoreQuery = [
       {
-        text: {
+        autocomplete: {
           query,
           path: 'name',
+          tokenOrder: 'sequential',
           score: { boost: { value: 3 } },
         },
       },
@@ -150,7 +151,6 @@ export class SearchService {
     }
   }
 
-  //TODO - 리턴타입
   async getRecentSearchKeywords(user: JwtPayload): Promise<GetRecentSearchKeywordsResDto> {
     const userId = user.id;
 
@@ -189,5 +189,99 @@ export class SearchService {
     }
 
     return;
+  }
+
+  //TODO - 리턴타입
+  async getAutocomplete(query: string): Promise<GetAutocompleteResDto> {
+
+    //라멘 매장 이름 검색 결과
+    //Legacy - 정규표현식을 이용한 검색
+    /* const ramenyaSearchResults = await this.ramenyaModel.aggregate([
+      {
+        $match: {
+          name: { $regex: query, $options: 'i' }, // 전체 포함 검색
+        },
+      },
+      {
+        $addFields: {
+          isPrefixMatch: {
+            $cond: [
+              { $regexMatch: { input: '$name', regex: `^${query}`, options: 'i' } },
+              1,
+              0,
+            ],
+          },
+        },
+      },
+      {
+        $sort: {
+          isPrefixMatch: -1, // 시작 일치하는 것이 먼저
+          name: 1, // 그다음 이름 순 정렬
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          businessHours: 1,
+        },
+      },
+    ]); */
+
+    const ramenyaSearchResults = await this.ramenyaModel.aggregate([
+      {
+        $search: {
+          index: 'geo',
+          autocomplete: {
+            query: query,
+            path: 'name',
+            tokenOrder: 'sequential',
+          },
+        },
+      },
+      {
+        $match: {
+          name: { $regex: `^${query}`, $options: 'i' },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          businessHours: 1,
+        },
+      },
+    ]); 
+    
+    //관련 검색어 결과
+    const keywordSearchResults = await this.ramenyaModel.aggregate([
+      {
+        $search: {
+          index: 'geo',
+          compound: {
+            should: {
+                text: {
+                  query,
+                  path: 'genre',
+                  score: { boost: { value: 3 } },
+                },
+              },
+            minimumShouldMatch: 1,
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          businessHours: 1,
+        },
+      },
+    ])
+
+    return {
+      ramenyaSearchResults,
+      keywordSearchResults,
+    }
   }
 }
