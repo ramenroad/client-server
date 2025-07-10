@@ -6,6 +6,8 @@ import { searchKeyword } from 'schema/searchKeyword.schema';
 import { JwtPayload } from 'src/common/types/jwtpayloadtype';
 import SearchParams from './interfaces/searchParam.interface';
 import { SearchResDto } from './dto/res/search.res.dto';
+import { GetRecentSearchKeywordsResDto } from './dto/res/getRecentSearchKeywords.res.dto';
+import { DeleteRecentSearchKeywordsReqDTO } from './dto/req/deleteRecentSearchKeywords.req.dto';
 
 @Injectable()
 export class SearchService {
@@ -149,7 +151,7 @@ export class SearchService {
   }
 
   //TODO - 리턴타입
-  async getRecentSearchKeywords(user: JwtPayload) {
+  async getRecentSearchKeywords(user: JwtPayload): Promise<GetRecentSearchKeywordsResDto> {
     const userId = user.id;
 
     const [searchKeywords, ramenyaNames] = await Promise.all([
@@ -159,6 +161,7 @@ export class SearchService {
           type: 'searchKeyword',
           isDeleted: false,
         })
+        .select('_id keyword')
         .sort({ updatedAt: -1 })
         .limit(10),
 
@@ -168,10 +171,23 @@ export class SearchService {
           type: 'ramenyaName',
           isDeleted: false,
         })
+        .select('_id keyword ramenyaId')
         .sort({ updatedAt: -1 })
         .limit(10),
     ]);
 
     return { searchKeywords, ramenyaNames };
+  }
+
+  async deleteRecentSearchKeywords(user: JwtPayload, body: DeleteRecentSearchKeywordsReqDTO): Promise<void> {
+    
+    for(const id of body.keywordId) {
+      await this.searchKeywordModel.updateOne(
+        { _id: id, userId: user.id },
+        { isDeleted: true },
+      );
+    }
+
+    return;
   }
 }
