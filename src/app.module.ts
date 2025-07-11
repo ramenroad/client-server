@@ -10,6 +10,7 @@ import { MypageModule } from './mypage/mypage.module';
 import { ReviewModule } from './review/review.module';
 import { CommonService } from './common/common.service';
 import { CommonModule } from './common/common.module';
+import { SearchModule } from './search/search.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { CommonModule } from './common/common.module';
     MypageModule,
     ReviewModule,
     CommonModule,
+    SearchModule,
   ],
   controllers: [],
   providers: [
