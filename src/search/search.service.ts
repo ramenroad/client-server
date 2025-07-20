@@ -153,7 +153,7 @@ export class SearchService {
 
   async getRecentSearchKeywords(user: JwtPayload): Promise<GetRecentSearchKeywordsResDto> {
     const userId = user.id;
-
+    
     const [searchKeywords, ramenyaNames] = await Promise.all([
       this.searchKeywordModel
         .find({
@@ -172,8 +172,9 @@ export class SearchService {
           isDeleted: false,
         })
         .select('_id keyword ramenyaId')
+        .populate({ path: 'ramenyaId', select: 'businessHours'})
         .sort({ updatedAt: -1 })
-        .limit(10),
+        .limit(10)
     ]);
 
     return { searchKeywords, ramenyaNames };
