@@ -21,7 +21,7 @@ export class SearchService {
   async search(params: SearchParams): Promise<SearchResDto[]> {
     const { query, userId, latitude, longitude, radius } = params;
     //검색어와 일치하는 매장 이름이 있으면 먼저 리턴
-    const resultsOfSearchByName = await this.ramenyaModel
+    /* const resultsOfSearchByName = await this.ramenyaModel
       .find({
         name: query,
       })
@@ -37,7 +37,7 @@ export class SearchService {
         resultsOfSearchByName[0]._id.toString(),
       );
       return resultsOfSearchByName;
-    }
+    } */
 
     const searchPipeline = [];
 
@@ -61,32 +61,34 @@ export class SearchService {
     ];
 
     // 위치 기반 필터를 조건적으로 추가
-    let geoFilterQuery;
-
+    const compoundQuery: any = {
+      should: keywordScoreQuery,
+      minimumShouldMatch: 1,
+    };
+    
+    // 위치가 있으면 must에 위치 조건을 넣는다
     if (latitude && longitude && radius) {
-      geoFilterQuery = {
-        geoWithin: {
-          circle: {
-            center: {
-              type: 'Point',
-              coordinates: [longitude, latitude],
+      compoundQuery.must = [
+        {
+          geoWithin: {
+            circle: {
+              center: {
+                type: 'Point',
+                coordinates: [longitude, latitude],
+              },
+              radius: radius,
             },
-            radius: radius,
+            path: 'location',
           },
-          path: 'location',
         },
-      };
+      ];
     }
 
     searchPipeline.push(
       {
         $search: {
           index: 'geo',
-          compound: {
-            should: keywordScoreQuery,
-            minimumShouldMatch: 1,
-            ...(geoFilterQuery ? { filter: geoFilterQuery } : {}),
-          },
+          compound: compoundQuery
         },
       },
       {
