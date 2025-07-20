@@ -16,6 +16,37 @@ class SearchKeyword {
     keyword: string;
 }
 
+class businessHours {
+    @ApiProperty()
+    day: string;
+  
+    @ApiProperty()
+    operatingTime?: string;
+  
+    @ApiProperty()
+    breakTime?: string;
+  
+    @ApiProperty()
+    isOpen: boolean;
+}
+
+class RamenyaBusinessHoursInfo {
+    @ApiProperty({
+        description: '라멘매장 ID',
+        example: '668e90909090909090909090',
+        type: String,
+    })
+    _id: string | unknown;
+
+
+    @ApiProperty({
+        description: '라멘매장 영업시간',
+        type: businessHours,
+        isArray: true
+    })
+    businessHours: businessHours[]
+}
+
 class RamenyaName {
 
     @ApiProperty({
@@ -33,9 +64,9 @@ class RamenyaName {
 
     @ApiProperty({
         description: '라멘야 ID',
-        type: String,
+        type: RamenyaBusinessHoursInfo,
     })
-    ramenyaId?: string | unknown;
+    ramenyaId?: unknown | RamenyaBusinessHoursInfo;
 }
 
 
