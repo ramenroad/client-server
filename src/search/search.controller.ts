@@ -48,6 +48,11 @@ export class SearchController {
     description: '검색할 반경(미터)',
     required: false,
   })
+  @ApiQuery({
+    name: 'inLocation',
+    description: '현재 위치에서 재검색 여부',
+    required: false,
+  })
   @ApiResponse({
     status: 200,
     description: '검색 성공',
@@ -60,6 +65,7 @@ export class SearchController {
     @Query('latitude') latitude?: number,
     @Query('longitude') longitude?: number,
     @Query('radius') radius?: number,
+    @Query('inLocation') inLocation?: boolean,
     @User() user?: JwtPayload,
   ) {
     const userId = user ? user.id : null;
@@ -69,6 +75,7 @@ export class SearchController {
       latitude,
       longitude,
       radius,
+      inLocation
     };
     return this.searchService.search(searchParams);
   }

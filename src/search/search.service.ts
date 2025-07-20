@@ -19,9 +19,10 @@ export class SearchService {
   ) {}
 
   async search(params: SearchParams): Promise<SearchResDto[]> {
-    const { query, userId, latitude, longitude, radius } = params;
+    const { query, userId, latitude, longitude, radius, inLocation } = params;
     //검색어와 일치하는 매장 이름이 있으면 먼저 리턴
-    /* const resultsOfSearchByName = await this.ramenyaModel
+    if (!inLocation) {
+      const resultsOfSearchByName = await this.ramenyaModel
       .find({
         name: query,
       })
@@ -29,7 +30,7 @@ export class SearchService {
         '_id name thumbnailUrl address genre menus rating reviewCount latitude longitude businessHours',
       );
 
-    if (resultsOfSearchByName.length > 0) {
+     if (resultsOfSearchByName.length > 0) {
       await this.saveSearchKeyword(
         userId,
         query,
@@ -37,7 +38,8 @@ export class SearchService {
         resultsOfSearchByName[0]._id.toString(),
       );
       return resultsOfSearchByName;
-    } */
+      }
+    }
 
     const searchPipeline = [];
 
@@ -61,34 +63,45 @@ export class SearchService {
     ];
 
     // 위치 기반 필터를 조건적으로 추가
-    const compoundQuery: any = {
-      should: keywordScoreQuery,
-      minimumShouldMatch: 1,
-    };
-    
-    // 위치가 있으면 must에 위치 조건을 넣는다
+    let geoFilterQuery;
+
     if (latitude && longitude && radius) {
-      compoundQuery.must = [
-        {
-          geoWithin: {
-            circle: {
-              center: {
-                type: 'Point',
-                coordinates: [longitude, latitude],
-              },
-              radius: radius,
+      geoFilterQuery = {
+        geoWithin: {
+          circle: {
+            center: {
+              type: 'Point',
+              coordinates: [longitude, latitude],
             },
-            path: 'location',
+            radius: radius,
           },
+          path: 'location',
         },
-      ];
+      };
     }
+
+    // compound 쿼리 구성
+  const compoundQuery: any = {
+    should: keywordScoreQuery,
+    minimumShouldMatch: 1,
+  };
+
+  if (geoFilterQuery) {
+    if (inLocation) {
+      // 위치 조건이 반드시 만족되어야 함
+      compoundQuery.must = [geoFilterQuery];
+    } else {
+      // 위치 조건은 필터로만 사용
+      compoundQuery.filter = geoFilterQuery;
+    }
+  }
+
 
     searchPipeline.push(
       {
         $search: {
           index: 'geo',
-          compound: compoundQuery
+          compound: compoundQuery,
         },
       },
       {
