@@ -17,7 +17,7 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: ['http://localhost:5173', 'https://ramenroad.com'],
+    origin: ['http://localhost:5173', 'https://ramenroad.com', 'https://ra-ising.com'],
     methods: 'GET,PATCH,POST,DELETE',
     credentials: true,
   });
