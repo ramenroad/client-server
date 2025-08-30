@@ -64,7 +64,6 @@ _2025.03.28 기준_
 | BE / Lead | 김준서 | https://github.com/kimjunseoo // https://www.instagram.com/ramen.mania.kim/ |
 | FE        | 김종운 | https://github.com/devcdd     |
 | UI/UX     | 성다현 |                               |
-| 기획 & 홍보 | 한성웅(웅성) | https://www.instagram.com/menolic.sw/ |
 
 <br>
 
@@ -72,3 +71,4 @@ _2025.03.28 기준_
 | 포지션    | 이름   | 프로필                        |
 | --------- | ------ | ----------------------------- |
 | FE        | 이지호 | https://github.com/mangming2  |
+| 기획 & 홍보 | 한성웅(웅성) | https://www.instagram.com/menolic.sw/ |
