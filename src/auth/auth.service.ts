@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -76,6 +77,15 @@ export class AuthService {
     const user = await this.userModel.findOne({
       kakaoId: String(response2.data.id),
     });
+
+    //탈퇴한지 3개월 이내인 회원 경우 로그인 불가
+    if (user.deletedAt !== null) {
+      throw new ForbiddenException({
+        message: '탈퇴한 회원입니다.',
+        error: 'WITHDRAWN_USER',
+        statusCode: 403
+      });
+    }
 
     //동일한 이메일로 가입된 유저가 있는지 확인
     const existingUserByEmail = await this.userModel.findOne({
@@ -226,7 +236,10 @@ export class AuthService {
     const userRt = user.refreshToken;
     const userId = user.payload.id;
 
-    const existedUser = await this.userModel.findById(userId);
+    const existedUser = await this.userModel.findById({
+      id: userId,
+      deletedAt: null,
+    });
 
     if (!existedUser || !existedUser.refreshToken) {
       throw new HttpException(
@@ -326,6 +339,15 @@ export class AuthService {
       naverId: String(response2.data.response.id),
     });
 
+    //탈퇴한지 1개월 이내인 회원 경우 로그인 불가
+    if (user.deletedAt !== null) {
+      throw new ForbiddenException({
+        message: '탈퇴한 회원입니다.',
+        error: 'WITHDRAWN_USER',
+        statusCode: 403
+      });
+    }
+
     //동일한 이메일로 가입된 유저가 있는지 확인
     const existingUserByEmail = await this.userModel.findOne({
       email: response2.data.response.email,
@@ -382,5 +404,16 @@ export class AuthService {
 
       return response;
     }
+  }
+
+  async withdrawal(user: JwtPayload): Promise<void> {
+
+    await this.userModel.findByIdAndUpdate(user.id, {
+      nickname: '탈퇴 회원',
+      profileImageUrl: 'https://ramenroad-prod.s3.ap-northeast-2.amazonaws.com/images/public/basic_profile.png',
+      deletedAt: new Date(),
+    });
+
+    return;
   }
 }

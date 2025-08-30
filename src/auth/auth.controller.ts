@@ -14,6 +14,7 @@ import { signInUserByNaverReqDTO } from './dto/req/signInUserByNaver.req.dto';
 import { signInUserByNaverResDTO } from './dto/res/signInUserByNaver.res.dto';
 import { signInUserByKakao406ResDTO } from './dto/res/signInUserByKakao.406.res.dto';
 import { signInUserByNaver406ResDTO } from './dto/res/signInUserByNaver.406.res.dto';
+import { signInUser403ResDTO } from './dto/res/signInUserByNaver.403.res.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -30,6 +31,11 @@ export class AuthController {
     description:
       '로그인 성공  // 비회원이였던 경우, 회원가입 후 로그인 성공 // type 값은 signin,signup 중 하나입니다. 로그인 시 signin, 회원가입 시 signup ',
     type: signInUserByKakakoResDTO,
+  })
+  @ApiResponse({
+    status: 403,
+    description: '탈퇴한 회원인 경우',
+    type: signInUser403ResDTO,
   })
   @ApiResponse({
     status: 406,
@@ -58,6 +64,11 @@ export class AuthController {
     description:
       '로그인 성공  // 비회원이였던 경우, 회원가입 후 로그인 성공 // type 값은 signin,signup 중 하나입니다. 로그인 시 signin, 회원가입 시 signup ',
     type: signInUserByNaverResDTO,
+  })
+  @ApiResponse({
+    status: 403,
+    description: '탈퇴한 회원인 경우',
+    type: signInUser403ResDTO,
   })
   @ApiResponse({
     status: 406,
@@ -113,5 +124,18 @@ export class AuthController {
   @Post('signout')
   signOut(@User() user: JwtPayload): Promise<void> {
     return this.authService.signOut(user);
+  }
+
+  @ApiOperation({
+    summary: '회원 탈퇴하기'
+  })
+  @ApiResponse({
+    status: 201,
+    description: '회원 탈퇴 성공',
+  })
+  @ApiBearerAuth('accessToken')
+  @Post('withdrawal')
+  withdrawal(@User() user: JwtPayload): Promise<void> {
+    return this.authService.withdrawal(user);
   }
 }

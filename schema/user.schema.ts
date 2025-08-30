@@ -55,6 +55,11 @@ export class user extends Document {
     default: 0,
   })
   reviewCount: number;
+
+  @Prop({
+    default: null,
+  })
+  deletedAt: Date;
 }
 
 export const userSchema = SchemaFactory.createForClass(user);

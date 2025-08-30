@@ -121,4 +121,6 @@ export class MypageController {
   getUserInfo(@Param('userId') userId: string): Promise<getUserInfoResDTO> {
     return this.mypageService.getUserInfo(userId);
   }
+  
+
 }
