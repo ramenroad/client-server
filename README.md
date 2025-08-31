@@ -20,7 +20,7 @@
 
 ## 프로젝트 링크
 
-- 공식 홈페이지 : https://ramenroad.com/
+- 공식 홈페이지 : https://ra-ising.com/
 - 프론트엔드 Github Repo : [https://github.com/ramenroad/client-front](https://github.com/ramenroad/client-front)
 - 백엔드 Github Repo : [https://github.com/ramenroad/client-server](https://github.com/ramenroad/client-server)
 
@@ -47,8 +47,9 @@ _2025.03.28 기준_
 |-----------------|-----------------------------------|
 | ✨ Feat         | 새로운 기능 추가, 구현 (Feature)   |
 | 🐛 Fix          | 버그 수정                          |
+| 💾 DB           | DB 관련 파일 수정
 | 📝 Docs         | 문서 파일 추가 및 수정             |
-| ✏️ typo         | 단순 오타 수정                     |
+| ✏️ Typo         | 단순 오타 수정                     |
 | 🚚 Route        | 파일, 경로, route를 옮기거나 이름 변경 |
 | ♻️ Refact       | 코드 리팩토링                      |
 | 🔥 Del          | 삭제(파일, 코드)                   |
@@ -57,9 +58,17 @@ _2025.03.28 기준_
 
 ## 팀원
 
+**현재 팀원**
 | 포지션    | 이름   | 프로필                        |
 | --------- | ------ | ----------------------------- |
-| BE / Lead | 김준서 | https://github.com/kimjunseoo |
+| BE / Lead | 김준서 | https://github.com/kimjunseoo // https://www.instagram.com/ramen.mania.kim/ |
 | FE        | 김종운 | https://github.com/devcdd     |
-| FE        | 이지호 | https://github.com/mangming2  |
 | UI/UX     | 성다현 |                               |
+
+<br>
+
+**과거 팀원**
+| 포지션    | 이름   | 프로필                        |
+| --------- | ------ | ----------------------------- |
+| FE        | 이지호 | https://github.com/mangming2  |
+| 기획 & 홍보 | 한성웅(웅성) | https://www.instagram.com/menolic.sw/ |

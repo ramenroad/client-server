@@ -6,6 +6,7 @@ import { getRamenyaByIdResDTO } from './dto/res/getRamenyaById.res.dto';
 import { ramenya } from 'schema/ramenya.schema';
 import { ramenyaGroup } from 'schema/ramenyaGroup.schema';
 import { getRamenyaGroupsResDTO } from './dto/res/getRamenyaGroups.res.dto';
+import { getNearByRamenyaResDTO } from './dto/res/getNearByRamenya.res.dto';
 
 @Injectable()
 export class RamenyaService {
@@ -89,5 +90,32 @@ export class RamenyaService {
       .sort({ priority: 1 });
 
     return ramenyaGroups;
+  }
+
+  async getNearByRamenya(
+    latitude: number,
+    longitude: number,
+    radius: number,
+  ): Promise<getNearByRamenyaResDTO> {
+    const ramenyas = await this.ramenyaModel
+      .find({
+        location: {
+          $near: {
+            $geometry: {
+              type: 'Point',
+              coordinates: [longitude, latitude],
+            },
+            $maxDistance: radius,
+          },
+        },
+      })
+      .select(
+        'name thumbnailUrl genre region address businessHours longitude latitude rating reviewCount',
+      )
+      .sort({ rating: -1 });
+
+    return {
+      ramenyas: ramenyas,
+    };
   }
 }

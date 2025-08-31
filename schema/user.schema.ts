@@ -33,7 +33,33 @@ export class user extends Document {
   @Prop({
     required: false,
   })
+  naverId: string;
+
+  @Prop({
+    required: true,
+    default: true,
+  })
+  isPublic: boolean;
+
+  @Prop({
+    required: false,
+  })
   refreshToken: string;
+
+  @Prop({
+    default: 0,
+  })
+  avgReviewRating: number;
+
+  @Prop({
+    default: 0,
+  })
+  reviewCount: number;
+
+  @Prop({
+    default: null,
+  })
+  deletedAt: Date;
 }
 
 export const userSchema = SchemaFactory.createForClass(user);

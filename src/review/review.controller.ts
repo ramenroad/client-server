@@ -25,6 +25,9 @@ import { Public } from 'src/common/decorators/public.decorator';
 import { getRamenyaReviewsResDTO } from './dto/res/getRamenyaReviews.res.dto';
 import { getRamenyaReviewImagesResDTO } from 'src/review/dto/res/getRamenyaReviewImages.res.dto';
 import { updateReviewReqDTO } from './dto/req/updateReview.req.dto';
+import { getUserReviewsResDTO } from './dto/res/getUserReviews.res.dto';
+import { getReviewResDTO } from './dto/res/getReview.res.dto';
+import { getMyReviewsResDTO } from './dto/res/getMyReviews.res.dto';
 
 @Controller('review')
 export class ReviewController {
@@ -93,9 +96,9 @@ export class ReviewController {
   @Get('')
   getRamenyaReviews(
     @Query('ramenyaId') ramenyaId: string,
-    @Query('page') page: number,
-    @Query('limit') limit: number,
-  ) {
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+  ): Promise<getRamenyaReviewsResDTO> {
     return this.reviewService.getRamenyaReview(ramenyaId, page, limit);
   }
 
@@ -129,5 +132,63 @@ export class ReviewController {
     @UploadedFiles() reviewImages: Express.Multer.File[],
   ) {
     return this.reviewService.updateReview(user, reviewId, dto, reviewImages);
+  }
+
+  @ApiOperation({
+    summary: '내가 작성한 리뷰 불러오기',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '리뷰 불러오기 성공',
+    type: getMyReviewsResDTO
+  })
+  @ApiBearerAuth('accessToken')
+  @Get('/my/reviews')
+  getMyReviews(@User() user: JwtPayload, @Query('page') page?: number, @Query('limit') limit?: number):Promise<getMyReviewsResDTO>  {
+    return this.reviewService.getMyReviews(user, page, limit);
+  }
+
+  @Public()
+  @ApiOperation({
+    summary: '유저가 작성한 리뷰 불러오기',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '리뷰 불러오기 성공',
+    type: getUserReviewsResDTO
+  })
+  @ApiResponse({
+    status: 404,
+    description: '해당 userId에 대한 유저를 찾을 수 없는 경우',
+  })
+  @ApiResponse({
+    status: 403,
+    description: '해당 유저의 프로필이 비공개인 경우',
+  })
+  @Get('/:userId/reviews')
+  getUserReviews(@Param('userId') userId: string, @Query('page') page?: number, @Query('limit') limit?: number):Promise<getUserReviewsResDTO>  {
+    return this.reviewService.getUserReviews(userId, page, limit);
+  }
+
+  @ApiOperation({
+    summary: '리뷰 상세 조회하기',
+  })
+  @ApiBearerAuth('accessToken')
+  @ApiResponse({
+    status: 200,
+    description: '리뷰 상세 조회 성공',
+    type: getReviewResDTO,
+  })
+  @ApiResponse({
+    status: 404,
+    description: '해당 reviewId에 대한 리뷰를 찾을 수 없는 경우',
+  })
+  @ApiResponse({
+    status: 403,
+    description: '해당 리뷰의 작성자가 본인이 아닌 경우',
+  })
+  @Get('/:reviewId')
+  getReview(@User() user: JwtPayload, @Param('reviewId') reviewId: string) {
+    return this.reviewService.getReview(user, reviewId);
   }
 }

@@ -10,11 +10,15 @@ import { user } from 'schema/user.schema';
 import { JwtPayload } from 'src/common/types/jwtpayloadtype';
 import { getMyInfoResDTO } from './dto/res/getMyInfo.res.dto';
 import { CommonService } from 'src/common/common.service';
+import { updateIsPublicReqDTO } from './dto/req/updateIsPublic.req.dto';
+import { review } from 'schema/review.schema';
+import { getUserInfoResDTO } from './dto/res/getUserInfo.res.dto';
 
 @Injectable()
 export class MypageService {
   constructor(
     @InjectModel('user') private readonly userModel: Model<user>,
+    @InjectModel('review') private readonly reviewModel: Model<review>,
     private readonly commonService: CommonService,
   ) {}
 
@@ -57,5 +61,41 @@ export class MypageService {
     }
 
     return;
+  }
+
+  async updateIsPublic(user: JwtPayload, dto: updateIsPublicReqDTO) {
+    
+    await this.userModel.findByIdAndUpdate(user.id, {
+      isPublic: dto.isPublic,
+    });
+
+    return;
+  }
+
+  async getUserInfo(userId: string): Promise<getUserInfoResDTO> {
+    const user = await this.userModel.findById(userId).select('nickname profileImageUrl avgReviewRating reviewCount isPublic');
+
+    if (!user) {
+      throw new NotFoundException('유저 정보 조회 실패');
+    }
+
+    const reviewCount30Days = await this.reviewModel.countDocuments({
+      userId: userId,
+      createdAt: { 
+        $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+        $lt: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)
+      }
+    });
+
+    const response = {
+      nickname: user.nickname,
+      profileImageUrl: user.profileImageUrl,
+      avgReviewRating: user.avgReviewRating,
+      reviewCount: user.reviewCount,
+      isPublic: user.isPublic,
+      currentMonthReviewCount: reviewCount30Days,
+    }
+
+    return response;
   }
 }

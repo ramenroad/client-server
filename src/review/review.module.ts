@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ramenyaSchema } from 'schema/ramenya.schema';
 import { reviewSchema } from 'schema/review.schema';
 import { CommonService } from 'src/common/common.service';
+import { userSchema } from 'schema/user.schema';
 
 @Module({
   imports: [
@@ -13,6 +14,10 @@ import { CommonService } from 'src/common/common.service';
       {
         name: 'review',
         schema: reviewSchema,
+      },
+      {
+        name: 'user',
+        schema: userSchema,
       },
     ]),
   ],

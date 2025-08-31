@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Patch,
   UploadedFile,
   UseInterceptors,
@@ -19,6 +20,9 @@ import {
 import { JwtPayload } from 'src/common/types/jwtpayloadtype';
 import { getMyInfoResDTO } from './dto/res/getMyInfo.res.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { updateIsPublicReqDTO } from './dto/req/updateIsPublic.req.dto';
+import { Public } from 'src/common/decorators/public.decorator';
+import { getUserInfoResDTO } from './dto/res/getUserInfo.res.dto';
 
 @Controller('mypage')
 export class MypageController {
@@ -83,4 +87,40 @@ export class MypageController {
   ): Promise<void> {
     return this.mypageService.updateProfileImage(user, profileImageFile);
   }
+
+  @ApiOperation({
+    summary: '프로필 공개 여부 변경하기',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '프로필 공개 여부 변경 성공',
+  })
+  @ApiBearerAuth('accessToken')
+  @Patch('/isPublic')
+  updateIsPublic(
+    @User() user: JwtPayload,
+    @Body() dto: updateIsPublicReqDTO,
+  ): Promise<void> {
+    return this.mypageService.updateIsPublic(user, dto);
+  }
+
+  @Public()
+  @ApiOperation({
+    summary: '유저 프로필 정보 불러오기',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '유저 프로필 정보 불러오기 성공',
+    type: getUserInfoResDTO,
+  })
+  @ApiResponse({
+    status: 404,
+    description: '해당 userId에 대한 유저를 찾을 수 없는 경우',
+  })
+  @Get('/user/:userId')
+  getUserInfo(@Param('userId') userId: string): Promise<getUserInfoResDTO> {
+    return this.mypageService.getUserInfo(userId);
+  }
+  
+
 }
