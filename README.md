@@ -20,7 +20,7 @@
 
 ## 프로젝트 링크
 
-- 공식 홈페이지 : https://ramenroad.com/
+- 공식 홈페이지 : https://ra-ising.com/
 - 프론트엔드 Github Repo : [https://github.com/ramenroad/client-front](https://github.com/ramenroad/client-front)
 - 백엔드 Github Repo : [https://github.com/ramenroad/client-server](https://github.com/ramenroad/client-server)
 
