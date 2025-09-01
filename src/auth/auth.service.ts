@@ -78,15 +78,6 @@ export class AuthService {
       kakaoId: String(response2.data.id),
     });
 
-    //탈퇴한지 3개월 이내인 회원 경우 로그인 불가
-    if (user.deletedAt !== null) {
-      throw new ForbiddenException({
-        message: '탈퇴한 회원입니다.',
-        error: 'WITHDRAWN_USER',
-        statusCode: 403
-      });
-    }
-
     //동일한 이메일로 가입된 유저가 있는지 확인
     const existingUserByEmail = await this.userModel.findOne({
       email: response2.data.kakao_account.email,
@@ -338,15 +329,6 @@ export class AuthService {
     const user = await this.userModel.findOne({
       naverId: String(response2.data.response.id),
     });
-
-    //탈퇴한지 1개월 이내인 회원 경우 로그인 불가
-    if (user.deletedAt !== null) {
-      throw new ForbiddenException({
-        message: '탈퇴한 회원입니다.',
-        error: 'WITHDRAWN_USER',
-        statusCode: 403
-      });
-    }
 
     //동일한 이메일로 가입된 유저가 있는지 확인
     const existingUserByEmail = await this.userModel.findOne({
