@@ -158,15 +158,26 @@ export class ReviewService {
 
 
       //유저 정보 업데이트
+      console.log("리뷰" + review)
       const userByUserId = await this.userModel.findById(review.userId);
+      console.log("유저" + userByUserId)
+
 
       if (!userByUserId) {
         throw new InternalServerErrorException('유저 정보 조회 실패');
       }
       
-      const userNewAvgRating =
-        (userByUserId.avgReviewRating * userByUserId.reviewCount - review.rating) /
+      let userNewAvgRating; 
+
+      if (userByUserId.reviewCount == 1) {
+        userNewAvgRating = 0;
+      } else {
+        userNewAvgRating = (userByUserId.avgReviewRating * userByUserId.reviewCount - review.rating) /
         (userByUserId.reviewCount - 1);
+      }
+
+      console.log("userNewAvgRating" + userNewAvgRating)
+      console.log(typeof userNewAvgRating)
 
       await this.userModel.findByIdAndUpdate(review.userId, {
         $inc: {
@@ -179,6 +190,7 @@ export class ReviewService {
       return;
     } catch (error) {
       await transactionSession.abortTransaction();
+      console.log(error)
       throw new InternalServerErrorException('리뷰 삭제 transaction 실패');
     } finally {
       await transactionSession.endSession();
