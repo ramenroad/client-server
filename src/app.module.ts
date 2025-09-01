@@ -11,6 +11,7 @@ import { ReviewModule } from './review/review.module';
 import { CommonService } from './common/common.service';
 import { CommonModule } from './common/common.module';
 import { SearchModule } from './search/search.module';
+import { AlarmModule } from './alarm/alarm.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { SearchModule } from './search/search.module';
     ReviewModule,
     CommonModule,
     SearchModule,
+    AlarmModule,
   ],
   controllers: [],
   providers: [
