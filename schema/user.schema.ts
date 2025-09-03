@@ -1,6 +1,25 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
+@Schema()
+class NotificationInfo {
+  @Prop({
+    required: false,
+  })
+  deviceToken: string;
+
+  @Prop({
+    required: false,
+    default: true, // 푸시 알림 수신 여부, 기본값은 true
+  })
+  pushEnabled: boolean;
+
+  @Prop({
+    required: false
+  })
+  tokenUpdatedAt: Date;
+}
+
 @Schema({
   timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' },
   versionKey: false,
@@ -60,6 +79,16 @@ export class user extends Document {
     default: null,
   })
   deletedAt: Date;
+
+  @Prop({
+    type: NotificationInfo,
+    default: () => ({
+      deviceToken: null,
+      pushEnabled: true,
+      tokenUpdatedAt: null,
+    }),
+  })
+  notification: NotificationInfo;
 }
 
 export const userSchema = SchemaFactory.createForClass(user);
