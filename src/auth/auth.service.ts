@@ -236,8 +236,8 @@ export class AuthService {
     const userId = user.payload.id;
 
     const existedUser = await this.userModel.findById({
-      id: userId,
       deletedAt: null,
+      _id: userId,
     });
 
     if (!existedUser || !existedUser.refreshToken) {
