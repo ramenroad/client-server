@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { getRamenyasResDTO } from './dto/res/getRamenyas.res.dto';
@@ -7,6 +13,10 @@ import { ramenya } from 'schema/ramenya.schema';
 import { ramenyaGroup } from 'schema/ramenyaGroup.schema';
 import { getRamenyaGroupsResDTO } from './dto/res/getRamenyaGroups.res.dto';
 import { getNearByRamenyaResDTO } from './dto/res/getNearByRamenya.res.dto';
+import { JwtPayload } from 'src/common/types/jwtpayloadtype';
+import { uploadMenuBoardReqDTO } from './dto/req/uploadMenuBoard.req.dto';
+import { CommonService } from 'src/common/common.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class RamenyaService {
@@ -14,6 +24,7 @@ export class RamenyaService {
     @InjectModel('ramenya') private readonly ramenyaModel: Model<ramenya>,
     @InjectModel('ramenyaGroup')
     private readonly ramenyaGroupModel: Model<ramenyaGroup>,
+    private readonly commonService: CommonService,
   ) {}
 
   async getRamenyas(
@@ -117,5 +128,45 @@ export class RamenyaService {
     return {
       ramenyas: ramenyas,
     };
+  }
+
+  async uploadMenuBoard(
+    user: JwtPayload,
+    dto: uploadMenuBoardReqDTO,
+    menuBoardImages: Express.Multer.File[],
+  ): Promise<void> {
+    const ramenya = await this.ramenyaModel.findById(dto.ramenyaId);
+
+    if (!ramenya) {
+      throw new NotFoundException('존재하지 않는 라멘 매장입니다.');
+    }
+
+    for (const image of menuBoardImages) {
+      const url = await this.commonService.uploadImageFileToS3(
+        'images/menu-board/',
+        uuidv4(),
+        image,
+      );
+
+      if (url instanceof Error) {
+        throw new InternalServerErrorException('S3 이미지 업로드 실패');
+      }
+
+      await this.ramenyaModel
+        .findByIdAndUpdate(ramenya._id, {
+          $push: {
+            menuBoard: {
+              imageUrl: url,
+              description: dto.description,
+              userId: user.id,
+            },
+          },
+        })
+        .catch((error) => {
+          throw new InternalServerErrorException('메뉴판 업로드 실패');
+        });
+    }
+
+    return;
   }
 }
