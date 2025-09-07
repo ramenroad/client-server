@@ -1,4 +1,6 @@
 import {
+  BadRequestException,
+  ForbiddenException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -17,6 +19,7 @@ import { JwtPayload } from 'src/common/types/jwtpayloadtype';
 import { uploadMenuBoardReqDTO } from './dto/req/uploadMenuBoard.req.dto';
 import { CommonService } from 'src/common/common.service';
 import { v4 as uuidv4 } from 'uuid';
+import { deleteMenuBoardReqDTO } from './dto/req/deleteMenuBoard.req.dto';
 
 @Injectable()
 export class RamenyaService {
@@ -172,5 +175,34 @@ export class RamenyaService {
     }
 
     return;
+  }
+
+  async deleteMenuBoard(
+    user: JwtPayload,
+    dto: deleteMenuBoardReqDTO,
+  ): Promise<void> {
+    const ramenya = await this.ramenyaModel.findById(dto.ramenyaId);
+
+    if (!ramenya) {
+      throw new BadRequestException('존재하지 않는 라멘 매장입니다.');
+    }
+
+    const menuBoard = ramenya.menuBoard.find(
+      (menuBoard) => String(menuBoard._id) === dto.menuBoardId,
+    );
+
+    if (!menuBoard) {
+      throw new NotFoundException('존재하지 않는 메뉴판입니다.');
+    }
+
+    if (String(menuBoard.userId) !== user.id) {
+      throw new ForbiddenException('메뉴판 삭제 권한이 없습니다.');
+    }
+
+    await this.ramenyaModel.findByIdAndUpdate(dto.ramenyaId, {
+      $pull: {
+        menuBoard: { _id: dto.menuBoardId },
+      },
+    });
   }
 }
