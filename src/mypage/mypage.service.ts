@@ -64,7 +64,6 @@ export class MypageService {
   }
 
   async updateIsPublic(user: JwtPayload, dto: updateIsPublicReqDTO) {
-    
     await this.userModel.findByIdAndUpdate(user.id, {
       isPublic: dto.isPublic,
     });
@@ -73,7 +72,9 @@ export class MypageService {
   }
 
   async getUserInfo(userId: string): Promise<getUserInfoResDTO> {
-    const user = await this.userModel.findById(userId).select('nickname profileImageUrl avgReviewRating reviewCount isPublic');
+    const user = await this.userModel
+      .findById(userId)
+      .select('nickname profileImageUrl avgReviewRating reviewCount isPublic');
 
     if (!user) {
       throw new NotFoundException('유저 정보 조회 실패');
@@ -81,10 +82,10 @@ export class MypageService {
 
     const reviewCount30Days = await this.reviewModel.countDocuments({
       userId: userId,
-      createdAt: { 
+      createdAt: {
         $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-        $lt: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)
-      }
+        $lt: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1),
+      },
     });
 
     const response = {
@@ -94,8 +95,18 @@ export class MypageService {
       reviewCount: user.reviewCount,
       isPublic: user.isPublic,
       currentMonthReviewCount: reviewCount30Days,
-    }
+    };
 
     return response;
+  }
+
+  async checkNickname(nickname: string): Promise<boolean> {
+    const user = await this.userModel.findOne({ nickname: nickname });
+
+    if (user) {
+      return false;
+    }
+
+    return true;
   }
 }

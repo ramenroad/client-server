@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Patch,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -39,6 +40,20 @@ export class MypageController {
   @Patch('/nickname')
   updateNickname(@User() user: JwtPayload, @Body() dto: updateNicknameReqDTO) {
     return this.mypageService.updateNickname(user, dto);
+  }
+
+  @ApiOperation({
+    summary: '닉네임 중복 체크',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '닉네임 중복 체크 성공',
+    type: Boolean,
+  })
+  @ApiBearerAuth('accessToken')
+  @Get('/nickname/check')
+  checkNickname(@Query('nickname') nickname: string): Promise<boolean> {
+    return this.mypageService.checkNickname(nickname);
   }
 
   @ApiOperation({
@@ -121,6 +136,4 @@ export class MypageController {
   getUserInfo(@Param('userId') userId: string): Promise<getUserInfoResDTO> {
     return this.mypageService.getUserInfo(userId);
   }
-  
-
 }
