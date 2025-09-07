@@ -62,11 +62,15 @@ export class RamenyaService {
     const ramenya = await this.ramenyaModel
       .findById(id)
       .select(
-        'name thumbnailUrl genre region address latitude longitude contactNumber instagramProfile businessHours recommendedMenu ramenroadReview isSelfmadeNoodle rating reviewCount menus reviews kakaoMapUrl kakaoMapDeepLink naverMapUrl naverMapDeepLink googleMapUrl googleMapDeepLink',
+        'name thumbnailUrl genre region address latitude longitude contactNumber instagramProfile businessHours recommendedMenu ramenroadReview isSelfmadeNoodle rating reviewCount menus reviews kakaoMapUrl kakaoMapDeepLink naverMapUrl naverMapDeepLink googleMapUrl googleMapDeepLink menuBoard',
       )
       .populate({
         path: 'reviews',
         options: { limit: 3, sort: { createdAt: -1 } },
+        populate: { path: 'userId', select: 'nickname profileImageUrl' },
+      })
+      .populate({
+        path: 'menuBoard',
         populate: { path: 'userId', select: 'nickname profileImageUrl' },
       });
 
