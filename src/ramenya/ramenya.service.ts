@@ -42,7 +42,8 @@ export class RamenyaService {
       .find(query)
       .select(
         'name thumbnailUrl genre region address businessHours longitude latitude ramenroadReview rating reviewCount',
-      );
+      )
+      .sort({ reviewCount: -1 });
 
     return ramenyas;
   }
