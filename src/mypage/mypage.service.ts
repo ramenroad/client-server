@@ -13,6 +13,11 @@ import { CommonService } from 'src/common/common.service';
 import { updateIsPublicReqDTO } from './dto/req/updateIsPublic.req.dto';
 import { review } from 'schema/review.schema';
 import { getUserInfoResDTO } from './dto/res/getUserInfo.res.dto';
+import { notice } from 'schema/notice.schema';
+import { getNoticesResDTO } from './dto/res/getNotices.res.dto';
+import { getNoticeResDTO } from './dto/res/getNotice.res.dto';
+import { createInquiryReqDTO } from './dto/req/createInquiry.req.dto';
+import { inquiry } from 'schema/inquiry.schema';
 
 @Injectable()
 export class MypageService {
@@ -20,6 +25,8 @@ export class MypageService {
     @InjectModel('user') private readonly userModel: Model<user>,
     @InjectModel('review') private readonly reviewModel: Model<review>,
     private readonly commonService: CommonService,
+    @InjectModel('notice') private readonly noticeModel: Model<notice>,
+    @InjectModel('inquiry') private readonly inquiryModel: Model<inquiry>,
   ) {}
 
   async updateNickname(user: JwtPayload, dto: updateNicknameReqDTO) {
@@ -108,5 +115,30 @@ export class MypageService {
     }
 
     return true;
+  }
+
+  async getNotices(type: string): Promise<getNoticesResDTO[]> {
+
+    const notices = await this.noticeModel.find({ type: type })
+    .select('_id title url createdAt')
+
+    return notices;
+  }
+
+  async getNotice(noticeId: string): Promise<getNoticeResDTO> {
+    const notice = await this.noticeModel.findById(noticeId)
+    .select('_id title body url createdAt')
+
+    return notice;
+  }
+
+  async createInquiry(user: JwtPayload, dto: createInquiryReqDTO) {
+    await this.inquiryModel.create({
+      userId: user.id,
+      title: dto.title,
+      body: dto.body,
+    });
+
+    return
   }
 }
