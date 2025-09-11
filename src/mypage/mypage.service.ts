@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -23,6 +24,15 @@ export class MypageService {
   ) {}
 
   async updateNickname(user: JwtPayload, dto: updateNicknameReqDTO) {
+
+    const alreadyExist = await this.userModel.findOne({
+      nickname: dto.nickname,
+    });
+
+    if (alreadyExist) {
+      throw new ConflictException('닉네임이 중복인 경우');
+    }
+
     await this.userModel.findByIdAndUpdate(user.id, {
       nickname: dto.nickname,
     });
