@@ -36,6 +36,10 @@ export class MypageController {
     status: 200,
     description: '닉네임 변경 성공',
   })
+  @ApiResponse({
+    status: 409,
+    description: '닉네임이 중복인 경우',
+  })
   @ApiBearerAuth('accessToken')
   @Patch('/nickname')
   updateNickname(@User() user: JwtPayload, @Body() dto: updateNicknameReqDTO) {
