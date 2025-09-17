@@ -65,7 +65,7 @@ export class CommonService {
 
   async convertToWebp(buffer: Buffer): Promise<Buffer> {
     try {
-      const webpBuffer = await sharp(buffer).webp({ lossless: true }).toBuffer();
+      const webpBuffer = await sharp(buffer).webp({ quality: 85, effort: 4 }).toBuffer();
 
       return webpBuffer;
     } catch (error) {
