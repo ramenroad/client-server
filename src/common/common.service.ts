@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import * as AWS from 'aws-sdk';
 import * as sharp from 'sharp';
+import { Express } from 'express';
 
 @Injectable()
 export class CommonService {
