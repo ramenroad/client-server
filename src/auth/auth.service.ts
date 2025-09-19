@@ -49,8 +49,7 @@ export class AuthService {
     try {
       response1 = await axios.post(apiUrl, body, { headers: header });
     } catch (error) {
-      console.log(error);
-      throw new InternalServerErrorException('카카오 토큰 발급 실패');
+      throw new Error('카카오 토큰 발급 실패');
     }
 
     // <-> Kakao API / 토큰으로 사용자 정보 받아오기 API 요청
@@ -297,8 +296,7 @@ export class AuthService {
     try {
       response1 = await axios.get(apiUrl, { headers: header });
     } catch (error) {
-      console.log(error);
-      throw new InternalServerErrorException('네이버 토큰 발급 실패');
+      throw new Error('네이버 토큰 발급 실패');
     }
 
     if (response1.status != 200){
@@ -324,14 +322,8 @@ export class AuthService {
         },
       );
     } catch (error) {
-      console.log(error);
-      throw new InternalServerErrorException('네이버 토큰 발급 실패');
+      throw new Error('네이버 토큰 발급 실패');
     }
-
-    if (response2.status != 200)
-      throw new InternalServerErrorException(
-        '네이버 사용자 정보 불러오기 실패',
-      );
     
     //사용자 정보가 DB에 존재하는지 확인(네이버 고유 id로 확인)
     const user = await this.userModel.findOne({

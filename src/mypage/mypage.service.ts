@@ -14,6 +14,7 @@ import { CommonService } from 'src/common/common.service';
 import { updateIsPublicReqDTO } from './dto/req/updateIsPublic.req.dto';
 import { review } from 'schema/review.schema';
 import { getUserInfoResDTO } from './dto/res/getUserInfo.res.dto';
+import { Express } from 'express';
 
 @Injectable()
 export class MypageService {
@@ -67,7 +68,7 @@ export class MypageService {
         profileImageUrl: url,
       });
     } catch (error) {
-      throw new InternalServerErrorException('프로필 사진 변경 실패');
+      throw new Error('프로필 사진 변경 실패');
     }
 
     return;
