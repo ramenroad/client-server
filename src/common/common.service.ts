@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import * as AWS from 'aws-sdk';
 import * as sharp from 'sharp';
+import { Express } from 'express';
 
 @Injectable()
 export class CommonService {
@@ -59,7 +60,7 @@ export class CommonService {
 
       return url;
     } catch (error) {
-      return new InternalServerErrorException('S3 업로드 실패');
+      return new Error('S3 업로드 실패');
     }
   }
 
@@ -69,7 +70,7 @@ export class CommonService {
 
       return webpBuffer;
     } catch (error) {
-      throw new InternalServerErrorException('WebP 변환 실패');
+      throw new Error('WebP 변환 실패');
     }
   }
 
@@ -80,7 +81,7 @@ export class CommonService {
         Key: path + name + '.webp',
       }).promise();
     } catch (error) {
-      throw new InternalServerErrorException('S3 이미지 삭제 실패');
+      throw new Error('S3 이미지 삭제 실패');
     }
   }
   async deleteObjectsFromS3(paths: string[]) {
@@ -92,7 +93,7 @@ export class CommonService {
         },
       }).promise();
     } catch (error) {
-      throw new InternalServerErrorException('S3 이미지 삭제 실패');
+      throw new Error('S3 이미지 삭제 실패');
     }
   }
 }

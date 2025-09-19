@@ -24,6 +24,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { updateIsPublicReqDTO } from './dto/req/updateIsPublic.req.dto';
 import { Public } from 'src/common/decorators/public.decorator';
 import { getUserInfoResDTO } from './dto/res/getUserInfo.res.dto';
+import { Express } from 'express';
 
 @Controller('mypage')
 export class MypageController {
