@@ -68,7 +68,7 @@ export class MypageService {
         profileImageUrl: url,
       });
     } catch (error) {
-      throw new InternalServerErrorException('프로필 사진 변경 실패');
+      throw new Error('프로필 사진 변경 실패');
     }
 
     return;

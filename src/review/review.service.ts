@@ -109,9 +109,8 @@ export class ReviewService {
       await transactionSession.commitTransaction();
       return;
     } catch (error) {
-      console.log(error);
       await transactionSession.abortTransaction();
-      throw new InternalServerErrorException('리뷰 작성 실패(DB)');
+      throw new Error('리뷰 작성 실패(DB)');
     } finally {
       await transactionSession.endSession();
     }
@@ -191,8 +190,7 @@ export class ReviewService {
       return;
     } catch (error) {
       await transactionSession.abortTransaction();
-      console.log(error)
-      throw new InternalServerErrorException('리뷰 삭제 transaction 실패');
+      throw new Error('리뷰 삭제 transaction 실패');
     } finally {
       await transactionSession.endSession();
     }
@@ -335,9 +333,8 @@ export class ReviewService {
       await transactionSession.commitTransaction();
       return;
     } catch (error) {
-      console.log(error);
       await transactionSession.abortTransaction();
-      throw new InternalServerErrorException('리뷰 수정 트랜잭션 실패');
+      throw new Error('리뷰 수정 트랜잭션 실패');
     } finally {
       await transactionSession.endSession();
     }
