@@ -3,6 +3,30 @@ import { Document } from 'mongoose';
 import { Schema as MongooseSchema } from 'mongoose';
 
 @Schema({
+  timestamps: { createdAt: true, updatedAt: false },
+  versionKey: false,
+})
+export class MenuBoard {
+  _id: MongooseSchema.Types.ObjectId;
+
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'user', required: true })
+  userId: MongooseSchema.Types.ObjectId; // 작성자 ID (User 스키마와 연결)
+
+  @Prop({ required: true })
+  imageUrl: string;
+
+  @Prop({ required: false })
+  description: string;
+
+  @Prop({ required: true, default: true })
+  isApproved: boolean;
+
+  createdAt: Date;
+}
+
+export const MenuBoardSchema = SchemaFactory.createForClass(MenuBoard);
+
+@Schema({
   timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' },
   versionKey: false,
 })
@@ -154,6 +178,12 @@ export class ramenya extends Document {
     required: false,
   })
   googleMapDeepLink: string;
+
+  @Prop({
+    type: [MenuBoardSchema],
+    default: [],
+  })
+  menuBoard: MenuBoard[];
 }
 
 export const ramenyaSchema = SchemaFactory.createForClass(ramenya);
