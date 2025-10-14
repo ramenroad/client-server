@@ -36,6 +36,11 @@ export class user extends Document {
   naverId: string;
 
   @Prop({
+    required: false,
+  })
+  googleId: string;
+
+  @Prop({
     required: true,
     default: true,
   })

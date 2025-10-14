@@ -19,6 +19,7 @@ import { signInUserByKakakoResDTO } from './dto/res/signInUserByKakao.res.dto';
 import { JwtPayload, RtJwtPayload } from 'src/common/types/jwtpayloadtype';
 import { signInUserByNaverReqDTO } from './dto/req/signInUserByNaver.req.dto';
 import { signInUserByNaverResDTO } from './dto/res/signInUserByNaver.res.dto';
+import { signInUserByGoogleReqDTO } from './dto/req/signInUserByGoogle.req.dto';
 
 @Injectable()
 export class AuthService {
@@ -276,7 +277,6 @@ export class AuthService {
   }
 
 
-  //작업 중
   async signInUserByNaver(
     dto: signInUserByNaverReqDTO,
   ): Promise<signInUserByNaverResDTO> {
@@ -360,6 +360,92 @@ export class AuthService {
         .create({
           email: response2.data.response.email,
           naverId: String(response2.data.response.id),
+          nickname: await this.generateRandomNickname(),
+        })
+        .then((userInfo) => (newUser = userInfo));
+
+      const tokens = await this.getUserTokens(
+        newUser.id,
+        newUser.email,
+        newUser.nickname,
+      );
+
+      await this.updateUserRtHash(newUser.id, tokens.refreshToken);
+
+      const response = {
+        type: 'signup',
+        ...tokens,
+      };
+
+      return response;
+    } else {
+      //존재하는 경우, 로그인 토큰 발급
+      const tokens = await this.getUserTokens(
+        user.id,
+        user.email,
+        user.nickname,
+      );
+      await this.updateUserRtHash(user.id, tokens.refreshToken);
+
+      const response = {
+        type: 'signin',
+        ...tokens,
+      };
+
+      return response;
+    }
+  }
+
+  async signInUserByGoogle(dto: signInUserByGoogleReqDTO){
+
+    // <-> Google API / 인가코드로 사용자 정보 받아오기 API 요청
+    const headers = {
+			Authorization: `Bearer ${dto.accessToken}`,
+		};
+
+		const response1: any = await axios
+			.get(`https://www.googleapis.com/oauth2/v3/userinfo`, { headers })
+			.catch((error) => {
+				console.log(error);
+			});
+
+		if (response1.status != 200)
+			throw new Error("구글 사용자 정보를 불러올 수 없습니다.");
+
+    const user = await this.userModel.findOne({
+      googleId: String(response1.data.sub),
+    });
+
+    if (user && user.deletedAt != null) {
+      throw new ForbiddenException({
+        message: '탈퇴한 회원입니다.',
+        error: 'WITHDRAWN_USER',
+        statusCode: 403
+      })
+    }
+
+    //동일한 이메일로 가입된 유저가 있는지 확인
+    const existingUserByEmail = await this.userModel.findOne({
+      email: response1.data.email,
+      googleId: { $ne: String(response1.data.sub) }, // 현재 카카오 ID가 아닌 다른 유저
+    });
+    
+    if (existingUserByEmail) {
+      throw new NotAcceptableException({
+        message: `이메일 ${response1.data.email}은 이미 가입된 주소입니다.`,
+        email: response1.data.email,
+        error: 'EMAIL_ALREADY_EXISTS',
+        statusCode: 406
+      });
+    }
+
+    if (!user) {
+      //존재하지 않는 경우, 유저 생성 후 토큰 발급
+      let newUser;
+      await this.userModel
+        .create({
+          email: response1.data.email,
+          googleId: String(response1.data.sub),
           nickname: await this.generateRandomNickname(),
         })
         .then((userInfo) => (newUser = userInfo));
