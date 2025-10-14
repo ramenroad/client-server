@@ -5,11 +5,16 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { userSchema } from 'schema/user.schema';
 import { CommonService } from 'src/common/common.service';
 import { reviewSchema } from 'schema/review.schema';
+import { noticeSchema } from 'schema/notice.schema';
+import { inquirySchema } from 'schema/inquiry.schema';
 
 @Module({
   imports: [MongooseModule.forFeature([
     { name: 'user', schema: userSchema }, 
-    { name: 'review', schema: reviewSchema }])],
+    { name: 'review', schema: reviewSchema },
+    { name: 'notice', schema: noticeSchema },
+    { name: 'inquiry', schema: inquirySchema },
+  ])],
   controllers: [MypageController],
   providers: [MypageService, CommonService],
 })
