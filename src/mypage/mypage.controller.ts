@@ -29,6 +29,7 @@ import { getUserInfoResDTO } from './dto/res/getUserInfo.res.dto';
 import { getNoticesResDTO } from './dto/res/getNotices.res.dto';
 import { getNoticeResDTO } from './dto/res/getNotice.res.dto';
 import { createInquiryReqDTO } from './dto/req/createInquiry.req.dto';
+import { Express } from 'express';
 
 @Controller('mypage')
 export class MypageController {
@@ -40,6 +41,10 @@ export class MypageController {
   @ApiResponse({
     status: 200,
     description: '닉네임 변경 성공',
+  })
+  @ApiResponse({
+    status: 409,
+    description: '닉네임이 중복인 경우',
   })
   @ApiBearerAuth('accessToken')
   @Patch('/nickname')

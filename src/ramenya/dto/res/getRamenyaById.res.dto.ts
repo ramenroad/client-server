@@ -1,5 +1,36 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ObjectId } from 'mongoose';
+import { ObjectId, Schema } from 'mongoose';
+
+class user {
+  @ApiProperty()
+  _id: string;
+
+  @ApiProperty()
+  nickname: string;
+
+  @ApiProperty()
+  profileImageUrl: string;
+}
+
+class MenuBoard {
+  @ApiProperty({ type: String })
+  _id: ObjectId;
+
+  @ApiProperty({ type: user })
+  userId: object;
+
+  @ApiProperty()
+  imageUrl: string;
+
+  @ApiProperty()
+  description: string;
+
+  @ApiProperty()
+  isApproved: boolean;
+
+  @ApiProperty()
+  createdAt: Date;
+}
 
 class recommendedMenu {
   @ApiProperty()
@@ -30,17 +61,6 @@ class ramenroadReview {
 
   @ApiProperty()
   description: string;
-}
-
-class user {
-  @ApiProperty()
-  _id: string;
-
-  @ApiProperty()
-  nickname: string;
-
-  @ApiProperty()
-  profileImageUrl: string;
 }
 
 class review {
@@ -135,7 +155,7 @@ export class getRamenyaByIdResDTO {
 
   @ApiProperty()
   kakaoMapDeepLink?: string;
-  
+
   @ApiProperty()
   naverMapUrl?: string;
 
@@ -147,8 +167,7 @@ export class getRamenyaByIdResDTO {
 
   @ApiProperty()
   googleMapDeepLink?: string;
-  
-  
-  
-  
+
+  @ApiProperty({ type: MenuBoard, isArray: true })
+  menuBoard?: MenuBoard[];
 }

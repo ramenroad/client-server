@@ -1,3 +1,4 @@
+import "./instrument";
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -17,7 +18,7 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: ['http://localhost:5173', 'https://ramenroad.com', 'https://ra-ising.com'],
+    origin: ['http://localhost:5173', 'https://ramenroad.com', 'https://ra-ising.com', 'https://dev.ra-ising.com'],
     methods: 'GET,PATCH,POST,DELETE',
     credentials: true,
   });

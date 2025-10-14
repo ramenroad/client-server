@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -18,6 +19,7 @@ import { getNoticesResDTO } from './dto/res/getNotices.res.dto';
 import { getNoticeResDTO } from './dto/res/getNotice.res.dto';
 import { createInquiryReqDTO } from './dto/req/createInquiry.req.dto';
 import { inquiry } from 'schema/inquiry.schema';
+import { Express } from 'express';
 
 @Injectable()
 export class MypageService {
@@ -30,6 +32,15 @@ export class MypageService {
   ) {}
 
   async updateNickname(user: JwtPayload, dto: updateNicknameReqDTO) {
+
+    const alreadyExist = await this.userModel.findOne({
+      nickname: dto.nickname,
+    });
+
+    if (alreadyExist) {
+      throw new ConflictException('닉네임이 중복인 경우');
+    }
+
     await this.userModel.findByIdAndUpdate(user.id, {
       nickname: dto.nickname,
     });
@@ -64,7 +75,7 @@ export class MypageService {
         profileImageUrl: url,
       });
     } catch (error) {
-      throw new InternalServerErrorException('프로필 사진 변경 실패');
+      throw new Error('프로필 사진 변경 실패');
     }
 
     return;

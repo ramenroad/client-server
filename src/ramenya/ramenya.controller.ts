@@ -1,11 +1,32 @@
-import { Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+  UploadedFiles,
+  UseInterceptors,
+} from '@nestjs/common';
 import { RamenyaService } from './ramenya.service';
 import { getRamenyasResDTO } from './dto/res/getRamenyas.res.dto';
 import { getRamenyaByIdResDTO } from './dto/res/getRamenyaById.res.dto';
-import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { getRamenyaGroupsResDTO } from './dto/res/getRamenyaGroups.res.dto';
 import { Public } from 'src/common/decorators/public.decorator';
 import { getNearByRamenyaResDTO } from './dto/res/getNearByRamenya.res.dto';
+import { JwtPayload } from 'src/common/types/jwtpayloadtype';
+import { uploadMenuBoardReqDTO } from './dto/req/uploadMenuBoard.req.dto';
+import { User } from 'src/common/decorators/user.decorator';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { deleteMenuBoardReqDTO } from './dto/req/deleteMenuBoard.req.dto';
 
 @Controller({ path: 'ramenya', version: '1' })
 export class RamenyaController {
@@ -135,5 +156,56 @@ export class RamenyaController {
   @Get('/group/all')
   getRamenyaGroups(): Promise<getRamenyaGroupsResDTO[]> {
     return this.ramenyaService.getRamenyaGroups();
+  }
+
+  @ApiOperation({
+    summary: '라멘야 메뉴판 업로드',
+  })
+  @ApiResponse({
+    status: 201,
+    description: '라멘야 메뉴판 업로드 성공',
+  })
+  @ApiResponse({
+    status: 404,
+    description: '해당 ID의 라멘야가 존재하지 않는 경우',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBearerAuth('accessToken')
+  @UseInterceptors(FilesInterceptor('menuBoardImages'))
+  @Post('/menu-board')
+  uploadMenuBoard(
+    @User() user: JwtPayload,
+    @Body() dto: uploadMenuBoardReqDTO,
+    @UploadedFiles() menuBoardImages: Express.Multer.File[],
+  ): Promise<void> {
+    return this.ramenyaService.uploadMenuBoard(user, dto, menuBoardImages);
+  }
+
+  @ApiOperation({
+    summary: '라멘야 메뉴판 삭제',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '라멘야 메뉴판 삭제 성공',
+  })
+  @ApiResponse({
+    status: 400,
+    description: '해당 ID의 라멘야가 존재하지 않는 경우',
+  })
+  @ApiResponse({
+    status: 403,
+    description: '해당 메뉴판의 작성자가 본인이 아닌 경우',
+  })
+  @ApiResponse({
+    status: 404,
+    description: '해당 ID의 메뉴판이 존재하지 않는 경우',
+  })
+  @ApiBearerAuth('accessToken')
+  @Delete('/menu-board')
+  deleteMenuBoard(
+    @User() user: JwtPayload,
+    @Body() dto: deleteMenuBoardReqDTO,
+  ): Promise<void> {
+    return this.ramenyaService.deleteMenuBoard(user, dto);
   }
 }

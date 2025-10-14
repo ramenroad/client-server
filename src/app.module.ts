@@ -4,16 +4,18 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { BannerModule } from './banner/banner.module';
 import { AuthModule } from './auth/auth.module';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { AtGuard } from './common/guards/at.guard';
 import { MypageModule } from './mypage/mypage.module';
 import { ReviewModule } from './review/review.module';
 import { CommonService } from './common/common.service';
 import { CommonModule } from './common/common.module';
 import { SearchModule } from './search/search.module';
+import { SentryGlobalFilter, SentryModule } from '@sentry/nestjs/setup';
 
 @Module({
   imports: [
+    SentryModule.forRoot(),
     RamenyaModule,
     ConfigModule.forRoot({
       envFilePath: process.env.ENV_NAME,
@@ -36,6 +38,10 @@ import { SearchModule } from './search/search.module';
       useClass: AtGuard,
     },
     CommonService,
+    {
+      provide: APP_FILTER,
+      useClass: SentryGlobalFilter,
+    },
   ],
 })
 export class AppModule {}
