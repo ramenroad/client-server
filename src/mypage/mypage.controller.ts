@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Patch,
+  Post,
   Query,
   UploadedFile,
   UseInterceptors,
@@ -16,6 +17,7 @@ import {
   ApiBody,
   ApiConsumes,
   ApiOperation,
+  ApiQuery,
   ApiResponse,
 } from '@nestjs/swagger';
 import { JwtPayload } from 'src/common/types/jwtpayloadtype';
@@ -24,6 +26,9 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { updateIsPublicReqDTO } from './dto/req/updateIsPublic.req.dto';
 import { Public } from 'src/common/decorators/public.decorator';
 import { getUserInfoResDTO } from './dto/res/getUserInfo.res.dto';
+import { getNoticesResDTO } from './dto/res/getNotices.res.dto';
+import { getNoticeResDTO } from './dto/res/getNotice.res.dto';
+import { createInquiryReqDTO } from './dto/req/createInquiry.req.dto';
 import { Express } from 'express';
 
 @Controller('mypage')
@@ -140,5 +145,55 @@ export class MypageController {
   @Get('/user/:userId')
   getUserInfo(@Param('userId') userId: string): Promise<getUserInfoResDTO> {
     return this.mypageService.getUserInfo(userId);
+  }
+
+  @Public()
+  @ApiOperation({
+    summary: '고객지원 데이터 리스트 조회',
+    description: '공지사항/패치노트/약관 정보를 조회할 수 있습니다.',
+  })
+  @ApiQuery({
+    name: 'type',
+    required: true,
+    enum: ['공지사항', '패치노트', '약관'],
+    type: String,
+    description: '공지사항/패치노트/약관 정보를 조회할 수 있습니다.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '고객지원 데이터 조회 성공',
+    type: getNoticesResDTO,
+    isArray: true,
+  })
+  @Get('/notices')
+  getNotices(@Query('type') type: string): Promise<getNoticesResDTO[]> {
+    return this.mypageService.getNotices(type);
+  }
+
+  @Public()
+  @ApiOperation({
+    summary: '고객지원 데이터 상세 조회',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '고객지원 데이터 상세 조회 성공',
+    type: getNoticeResDTO,
+  })
+  @Get('/notice/:noticeId')
+  getNotice(@Param('noticeId') noticeId: string): Promise<getNoticeResDTO> {
+    return this.mypageService.getNotice(noticeId);
+  }
+
+  @ApiOperation({
+    summary: '의견 남기기',
+  })
+  @ApiResponse({
+    status: 201,
+    description: '의견 남기기 성공',
+  })
+  @ApiBearerAuth('accessToken')
+  @Post('/inquiry')
+  createInquiry(@User() user: JwtPayload, @Body() dto: createInquiryReqDTO): Promise<void> {
+    return this.mypageService.createInquiry(user, dto);
   }
 }
