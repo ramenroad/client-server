@@ -20,6 +20,9 @@ import { JwtPayload, RtJwtPayload } from 'src/common/types/jwtpayloadtype';
 import { signInUserByNaverReqDTO } from './dto/req/signInUserByNaver.req.dto';
 import { signInUserByNaverResDTO } from './dto/res/signInUserByNaver.res.dto';
 import { signInUserByGoogleReqDTO } from './dto/req/signInUserByGoogle.req.dto';
+import * as fs from 'fs';
+import { signInUserByAppleReqDTO } from './dto/req/signInUserByApple.req.dto';
+import { signInUserResDTO } from './dto/res/signInUser.res.dto';
 
 @Injectable()
 export class AuthService {
@@ -446,6 +449,124 @@ export class AuthService {
         .create({
           email: response1.data.email,
           googleId: String(response1.data.sub),
+          nickname: await this.generateRandomNickname(),
+        })
+        .then((userInfo) => (newUser = userInfo));
+
+      const tokens = await this.getUserTokens(
+        newUser.id,
+        newUser.email,
+        newUser.nickname,
+      );
+
+      await this.updateUserRtHash(newUser.id, tokens.refreshToken);
+
+      const response = {
+        type: 'signup',
+        ...tokens,
+      };
+
+      return response;
+    } else {
+      //존재하는 경우, 로그인 토큰 발급
+      const tokens = await this.getUserTokens(
+        user.id,
+        user.email,
+        user.nickname,
+      );
+      await this.updateUserRtHash(user.id, tokens.refreshToken);
+
+      const response = {
+        type: 'signin',
+        ...tokens,
+      };
+
+      return response;
+    }
+  }
+
+  async signInUserByApple(dto: signInUserByAppleReqDTO): Promise<signInUserResDTO> {
+    //클라이언트 secret 생성
+		const header = {
+			alg: "ES256",
+			kid: process.env.APPLE_LOGIN_SERVICE_KEY,
+		};
+
+		//const privateKey = fs.readFileSync("src/auth/secrets/AuthKey_APAVW4T833.p8", "utf8");
+    const privateKey = process.env.APPLE_SECRET_KEY
+
+		const clinetSecret = await this.jwtService.signAsync(
+			{
+				iss: process.env.APPLE_TEAM_ID, 
+				aud: "https://appleid.apple.com", 
+				sub: "com.ra-ising.raising", 
+			}, 
+			{
+				privateKey: privateKey,
+				expiresIn: 60 * 60 * 24 * 30,
+				header,
+			},
+		);
+
+		const body = {
+			client_id: process.env.APPLE_CLIENT_ID,
+			client_secret: clinetSecret,
+			code: dto.code,
+			grant_type: "authorization_code",
+		};
+
+		const appleTokenResponse = await axios
+			.post("https://appleid.apple.com/auth/oauth2/v2/token", body, {
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded",
+				},
+			})
+			.catch((error) => {
+				throw new Error("애플 로그인 토큰 발급에 실패했습니다.");
+			});
+
+
+		const decodedAppleIdToken = this.jwtService.decode(
+			appleTokenResponse.data.id_token,
+		);
+
+
+    //로그인 로직
+    //사용자 정보가 DB에 존재하는지 확인(카카오 고유 id로 확인)
+    const user = await this.userModel.findOne({
+      appleId: String(decodedAppleIdToken.sub),
+    });
+
+    if (user && user.deletedAt != null) {
+      throw new ForbiddenException({
+        message: '탈퇴한 회원입니다.',
+        error: 'WITHDRAWN_USER',
+        statusCode: 403
+      })
+    }
+
+    //동일한 이메일로 가입된 유저가 있는지 확인
+    const existingUserByEmail = await this.userModel.findOne({
+      email: decodedAppleIdToken.email,
+      appleId: { $ne: String(decodedAppleIdToken.sub) }, // 현재 카카오 ID가 아닌 다른 유저
+    });
+    
+    if (existingUserByEmail) {
+      throw new NotAcceptableException({
+        message: `이메일 ${decodedAppleIdToken.sub}은 이미 가입된 주소입니다.`,
+        email: decodedAppleIdToken.email,
+        error: 'EMAIL_ALREADY_EXISTS',
+        statusCode: 406
+      });
+    }
+
+    if (!user) {
+      //존재하지 않는 경우, 유저 생성 후 토큰 발급
+      let newUser;
+      await this.userModel
+        .create({
+          email: decodedAppleIdToken.email,
+          appleId: String(decodedAppleIdToken.sub),
           nickname: await this.generateRandomNickname(),
         })
         .then((userInfo) => (newUser = userInfo));

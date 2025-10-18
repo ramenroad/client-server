@@ -17,6 +17,8 @@ import { signInUserByNaver406ResDTO } from './dto/res/signInUserByNaver.406.res.
 import { signInUser403ResDTO } from './dto/res/signInUserByNaver.403.res.dto';
 import { signInUserByGoogleResDTO } from './dto/res/signInUserByGoogle.res.dto';
 import { signInUserByGoogleReqDTO } from './dto/req/signInUserByGoogle.req.dto';
+import { signInUserByAppleReqDTO } from './dto/req/signInUserByApple.req.dto';
+import { signInUserResDTO } from './dto/res/signInUser.res.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -119,6 +121,39 @@ export class AuthController {
     @Body() dto: signInUserByGoogleReqDTO,
   ): Promise<signInUserByGoogleResDTO> {
     return this.authService.signInUserByGoogle(dto);
+  }
+
+  @Public()
+  @ApiOperation({
+    summary: '애플 소셜 로그인',
+    description:
+      '회원가입이 되어있지 않은 유저 정보는 자동 회원가입 후 토큰이 발급됩니다.',
+  })
+  @ApiResponse({
+    status: 201,
+    description:
+      '로그인 성공  // 비회원이였던 경우, 회원가입 후 로그인 성공 // type 값은 signin,signup 중 하나입니다. 로그인 시 signin, 회원가입 시 signup ',
+    type: signInUserResDTO,
+  })
+  @ApiResponse({
+    status: 403,
+    description: '탈퇴한 회원인 경우',
+    type: signInUser403ResDTO,
+  })
+  @ApiResponse({
+    status: 406,
+    description: '이미 가입된 이메일인 경우',
+    type: signInUserByNaver406ResDTO,
+  })
+  @ApiResponse({
+    status: 500,
+    description: '사용자 정보 불러오기에 실패한 경우',
+  })
+  @Post('/signin/apple')
+  signInUserByApple(
+    @Body() dto: signInUserByAppleReqDTO,
+  ): Promise<signInUserResDTO> {
+    return this.authService.signInUserByApple(dto);
   }
 
   @Public()

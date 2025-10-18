@@ -41,6 +41,11 @@ export class user extends Document {
   googleId: string;
 
   @Prop({
+    required: false,
+  })
+  appleId: string;
+
+  @Prop({
     required: true,
     default: true,
   })
