@@ -27,6 +27,7 @@ import { uploadMenuBoardReqDTO } from './dto/req/uploadMenuBoard.req.dto';
 import { User } from 'src/common/decorators/user.decorator';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { deleteMenuBoardReqDTO } from './dto/req/deleteMenuBoard.req.dto';
+import { Express } from 'express';
 
 @Controller({ path: 'ramenya', version: '1' })
 export class RamenyaController {
