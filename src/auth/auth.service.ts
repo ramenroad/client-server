@@ -492,9 +492,15 @@ export class AuthService {
 			kid: process.env.APPLE_LOGIN_SERVICE_KEY,
 		};
 
-		//const privateKey = fs.readFileSync("src/auth/secrets/AuthKey_APAVW4T833.p8", "utf8");
-    const privateKey = process.env.APPLE_SECRET_KEY
-    console.log(privateKey)
+    // Docker에서 이 코드를 실행할 경우 'Docker layer 코드' 를 사용하고, 로컬에서 실행할 경우, '로컬 환경 코드' 를 사용하세요
+
+    // Docker layer 코드
+		const privateKey = fs.readFileSync(process.env.APPLE_KEY_PATH, "utf8");
+    
+    // 로컬 환경 코드
+    /* const privateKey = process.env.APPLE_SECRET_KEY
+    console.log(privateKey) */
+
 		const clinetSecret = await this.jwtService.signAsync(
 			{
 				iss: process.env.APPLE_TEAM_ID, 

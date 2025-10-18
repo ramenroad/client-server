@@ -41,6 +41,10 @@ jobs:
         id: vars
         run: echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
+      - name: Create Apple Key File
+        run: echo -e "${{ secrets.APPLE_SECRET_KEY }}" > apple_key.p8
+        shell: bash
+
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2
@@ -67,7 +71,6 @@ jobs:
             APPLE_LOGIN_SERVICE_KEY=${{ secrets.APPLE_LOGIN_SERVICE_KEY }}
             APPLE_TEAM_ID=${{ secrets.APPLE_TEAM_ID }}
             APPLE_CLIENT_ID=${{ secrets.APPLE_CLIENT_ID }}
-            APPLE_SECRET_KEY=${{ secrets.APPLE_SECRET_KEY }}
 
   deploy:
     needs: build
