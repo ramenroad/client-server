@@ -494,7 +494,7 @@ export class AuthService {
 
 		//const privateKey = fs.readFileSync("src/auth/secrets/AuthKey_APAVW4T833.p8", "utf8");
     const privateKey = process.env.APPLE_SECRET_KEY
-
+    console.log(privateKey)
 		const clinetSecret = await this.jwtService.signAsync(
 			{
 				iss: process.env.APPLE_TEAM_ID, 
