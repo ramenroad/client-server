@@ -20,6 +20,7 @@ import { uploadMenuBoardReqDTO } from './dto/req/uploadMenuBoard.req.dto';
 import { CommonService } from 'src/common/common.service';
 import { v4 as uuidv4 } from 'uuid';
 import { deleteMenuBoardReqDTO } from './dto/req/deleteMenuBoard.req.dto';
+import { Express } from 'express';
 
 @Injectable()
 export class RamenyaService {
