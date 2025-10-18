@@ -64,6 +64,10 @@ jobs:
             S3_BUCKET_NAME=${{ secrets.S3_BUCKET_NAME }}
             NAVER_DEVELOPERS_CLIENT_ID=${{ secrets.NAVER_DEVELOPERS_CLIENT_ID }}
             NAVER_DEVELOPERS_CLIENT_SECRET=${{ secrets.NAVER_DEVELOPERS_CLIENT_SECRET }}
+            APPLE_LOGIN_SERVICE_KEY=${{ secrets.APPLE_LOGIN_SERVICE_KEY }}
+            APPLE_TEAM_ID=${{ secrets.APPLE_TEAM_ID }}
+            APPLE_CLIENT_ID=${{ secrets.APPLE_CLIENT_ID }}
+            APPLE_SECRET_KEY=${{ secrets.APPLE_SECRET_KEY }}
 
   deploy:
     needs: build
