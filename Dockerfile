@@ -53,8 +53,8 @@ ENV APPLE_SECRET_KEY=${APPLE_SECRET_KEY}
 
 # 환경 변수 확인 (디버깅용, 필요 시 주석 처리)
 # RUN echo "BUILD_ENV=${RUNTIME_BUILD_ENV}" && \
-#    echo "MONGODB_URL=${MONGODB_URL}" && \
-#    echo "S3_BUCKET_NAME=${S3_BUCKET_NAME}"
+#    echo "MONGODB_URL=${MONGODB_URL}" && \
+#    echo "S3_BUCKET_NAME=${S3_BUCKET_NAME}"
 
 #build builder image
 RUN yarn build:${RUNTIME_BUILD_ENV}
@@ -101,6 +101,10 @@ ENV APPLE_LOGIN_SERVICE_KEY=${APPLE_LOGIN_SERVICE_KEY}
 ENV APPLE_TEAM_ID=${APPLE_TEAM_ID}
 ENV APPLE_CLIENT_ID=${APPLE_CLIENT_ID}
 ENV APPLE_SECRET_KEY=${APPLE_SECRET_KEY}
+
+# GitHub Actions에서 생성된 키 파일을 이미지 안으로 복사하고, 파일 경로를 환경 변수로 설정합니다.
+COPY apple_key.p8 ./secrets/apple_key.p8
+ENV APPLE_KEY_PATH=/app/secrets/apple_key.p8
 
 COPY --from=builder /app/ramenroad-client-server/dist ./dist
 COPY --from=builder /app/ramenroad-client-server/node_modules ./node_modules
