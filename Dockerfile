@@ -1,7 +1,7 @@
 # Multi Stage Build
 
 #1. generate builder image
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 RUN apk --no-cache add --virtual builds-deps build-base python3
 
@@ -60,7 +60,7 @@ ENV APPLE_SECRET_KEY_BASE64=${APPLE_SECRET_KEY_BASE64}
 RUN yarn build:${RUNTIME_BUILD_ENV}
 
 #2. generate running image 
-FROM node:18-alpine
+FROM node:20-alpine
 
 RUN mkdir -p /app
 WORKDIR /app
