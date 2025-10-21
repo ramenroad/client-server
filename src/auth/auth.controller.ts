@@ -149,7 +149,7 @@ export class AuthController {
     status: 500,
     description: '사용자 정보 불러오기에 실패한 경우',
   })
-  @Post('/oauth/apple')
+  @Post('/apple')
   signInUserByApple(
     @Body() body: any,
   ) {
