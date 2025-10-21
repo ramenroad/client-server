@@ -490,12 +490,13 @@ export class AuthService {
   async signInUserByApple(dto: signInUserByAppleReqDTO, res: Response, req: Request): Promise<void> {
 
     // API 접근 제한 (리다이렉트 보안 문제)
-    const allowedOrigins = ['https://ramenroad.com', 'https://ra-ising.com'];
+    /* const allowedOrigins = ['https://ramenroad.com', 'https://ra-ising.com', 'https://appleid.apple.com'];
     const originUrl = req.headers.origin;
+    console.log(originUrl)
 
     if (!allowedOrigins.includes(originUrl)) {
       throw new InternalServerErrorException('허용되지 않은 origin입니다.');
-    }   
+    }    */
 
     const decodedAppleIdToken = this.jwtService.decode(dto.id_token, {
 			complete: true,
@@ -580,7 +581,7 @@ export class AuthService {
 
       await this.updateUserRtHash(newUser.id, tokens.refreshToken);
 
-      return res.redirect(308, `${originUrl}/oauth/apple?type=signUp&accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`);
+      return res.redirect(308, `https://ra-ising.com/oauth/apple?type=signUp&accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`);
     } else {
       //존재하는 경우, 로그인 토큰 발급
       const tokens = await this.getUserTokens(
@@ -590,7 +591,7 @@ export class AuthService {
       );
       await this.updateUserRtHash(user.id, tokens.refreshToken);
 
-      return res.redirect(308, `${originUrl}/oauth/apple?type=signIn&accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`);
+      return res.redirect(308, `https://ra-ising.com/oauth/apple?type=signIn&accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`);
     }
   }
 
