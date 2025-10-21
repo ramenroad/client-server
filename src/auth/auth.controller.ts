@@ -1,10 +1,10 @@
-import { Body, Controller, Get, Post, Query, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { signUpUserByKakaoReqDTO } from './dto/req/signUpUserByKakao.req.dto';
 import { signInUserByKakakoReqDTO } from './dto/req/signInUserByKakao.req.dto';
 import { Public } from 'src/common/decorators/public.decorator';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { signInUserByKakakoResDTO } from './dto/res/signInUserByKakao.res.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from 'src/common/decorators/user.decorator';
@@ -132,8 +132,7 @@ export class AuthController {
   @ApiResponse({
     status: 201,
     description:
-      '로그인 성공  // 비회원이였던 경우, 회원가입 후 로그인 성공 // type 값은 signin,signup 중 하나입니다. 로그인 시 signin, 회원가입 시 signup ',
-    type: signInUserResDTO,
+      '로그인 성공 시 프론트엔드로 리다이렉트합니다. // 비회원이였던 경우, 회원가입 후 로그인 성공 // type 값은 signin,signup 중 하나입니다. 로그인 시 signin, 회원가입 시 signup ',
   })
   @ApiResponse({
     status: 403,
@@ -152,10 +151,10 @@ export class AuthController {
   @Post('/apple')
   signInUserByApple(
     @Body() dto: signInUserByAppleReqDTO,
-  ) {
-    //: Promise<signInUserResDTO>
-    console.log(dto)
-    return this.authService.signInUserByApple(dto);
+    @Res() res: Response,
+    @Req() req: Request
+  ): Promise<void> {
+    return this.authService.signInUserByApple(dto, res, req);
   }
 
   @Public()
