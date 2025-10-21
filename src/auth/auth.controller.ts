@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { signUpUserByKakaoReqDTO } from './dto/req/signUpUserByKakao.req.dto';
@@ -149,11 +149,13 @@ export class AuthController {
     status: 500,
     description: '사용자 정보 불러오기에 실패한 경우',
   })
-  @Post('/signin/apple')
+  @Post('/oauth/apple')
   signInUserByApple(
-    @Body() dto: signInUserByAppleReqDTO,
-  ): Promise<signInUserResDTO> {
-    return this.authService.signInUserByApple(dto);
+    @Body() body: any,
+  ) {
+    //: Promise<signInUserResDTO>
+    console.log(body)
+    //return this.authService.signInUserByApple(dto);
   }
 
   @Public()
