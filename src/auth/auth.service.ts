@@ -23,7 +23,7 @@ import { signInUserByGoogleReqDTO } from './dto/req/signInUserByGoogle.req.dto';
 import * as fs from 'fs';
 import { signInUserByAppleReqDTO } from './dto/req/signInUserByApple.req.dto';
 import { signInUserResDTO } from './dto/res/signInUser.res.dto';
-import jwkToPem from "jwk-to-pem";
+import jwkToPem = require('jwk-to-pem');
 
 @Injectable()
 export class AuthService {
