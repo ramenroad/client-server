@@ -23,6 +23,7 @@ import { signInUserByGoogleReqDTO } from './dto/req/signInUserByGoogle.req.dto';
 import * as fs from 'fs';
 import { signInUserByAppleReqDTO } from './dto/req/signInUserByApple.req.dto';
 import { signInUserResDTO } from './dto/res/signInUser.res.dto';
+import jwkToPem from "jwk-to-pem";
 
 @Injectable()
 export class AuthService {
@@ -486,56 +487,46 @@ export class AuthService {
   }
 
   async signInUserByApple(dto: signInUserByAppleReqDTO): Promise<signInUserResDTO> {
-    //클라이언트 secret 생성
-		const header = {
-			alg: "ES256",
-			kid: process.env.APPLE_LOGIN_SERVICE_KEY,
-		};
 
-    const encodedPrivateKey = process.env.APPLE_SECRET_KEY_BASE64
-    const privateKey = Buffer.from(encodedPrivateKey, 'base64').toString('utf8');
-    console.log(privateKey)
+    const decodedAppleIdToken = this.jwtService.decode(dto.id_token, {
+			complete: true,
+		});
 
-		const clinetSecret = await this.jwtService.signAsync(
-			{
-				iss: process.env.APPLE_TEAM_ID, 
-				aud: "https://appleid.apple.com", 
-				sub: "com.ra-ising.raising", 
-			}, 
-			{
-				privateKey: privateKey,
-				expiresIn: 60 * 60 * 24 * 30,
-				header,
-			},
+    console.log('디코딩 애플 id_token')
+    console.log(decodedAppleIdToken)
+
+    //클라이언트 공개 키 받아오기
+		const applePublicKeyResponse = await axios.get(`https://appleid.apple.com/auth/oauth2/v2/keys`);
+
+		const applePublicKey = applePublicKeyResponse.data;
+
+		const matchedApplePublicKey = applePublicKey.keys.find(
+			(obj) => obj.kid == decodedAppleIdToken.header.kid,
 		);
 
-		const body = {
-			client_id: process.env.APPLE_CLIENT_ID,
-			client_secret: clinetSecret,
-			code: dto.code,
-			grant_type: "authorization_code",
-		};
+		//애플 퍼블릭 KEY를 검증 위해 PEM 으로 변환
+		const pemPublicKey = jwkToPem(matchedApplePublicKey);
 
-		const appleTokenResponse = await axios
-			.post("https://appleid.apple.com/auth/oauth2/v2/token", body, {
-				headers: {
-					"Content-Type": "application/x-www-form-urlencoded",
-				},
-			})
-			.catch((error) => {
-				throw new Error("애플 로그인 토큰 발급에 실패했습니다.");
-			});
+    let verifiedPayload;
 
+		try {
+			verifiedPayload = await this.jwtService.verifyAsync(dto.id_token, {
+        publicKey: pemPublicKey,
+        issuer: 'https://appleid.apple.com',
+        audience: 'com.ra-ising.raising',
+      });
+		} catch (error) {
+			console.log(error);
+			throw new InternalServerErrorException("유효하지않은 애플 토큰입니다");
+		}
 
-		const decodedAppleIdToken = this.jwtService.decode(
-			appleTokenResponse.data.id_token,
-		);
-
+    console.log('verifiedPayload')
+    console.log(verifiedPayload)
 
     //로그인 로직
     //사용자 정보가 DB에 존재하는지 확인(카카오 고유 id로 확인)
     const user = await this.userModel.findOne({
-      appleId: String(decodedAppleIdToken.sub),
+      appleId: String(verifiedPayload.sub),
     });
 
     if (user && user.deletedAt != null) {
@@ -548,14 +539,14 @@ export class AuthService {
 
     //동일한 이메일로 가입된 유저가 있는지 확인
     const existingUserByEmail = await this.userModel.findOne({
-      email: decodedAppleIdToken.email,
-      appleId: { $ne: String(decodedAppleIdToken.sub) }, // 현재 카카오 ID가 아닌 다른 유저
+      email: verifiedPayload.email,
+      appleId: { $ne: String(verifiedPayload.sub) }, // 현재 애플 ID가 아닌 다른 유저
     });
     
     if (existingUserByEmail) {
       throw new NotAcceptableException({
-        message: `이메일 ${decodedAppleIdToken.sub}은 이미 가입된 주소입니다.`,
-        email: decodedAppleIdToken.email,
+        message: `이메일 ${verifiedPayload.email}은 이미 가입된 주소입니다.`,
+        email: verifiedPayload.email,
         error: 'EMAIL_ALREADY_EXISTS',
         statusCode: 406
       });
@@ -566,8 +557,8 @@ export class AuthService {
       let newUser;
       await this.userModel
         .create({
-          email: decodedAppleIdToken.email,
-          appleId: String(decodedAppleIdToken.sub),
+          email: verifiedPayload.email,
+          appleId: String(verifiedPayload.sub),
           nickname: await this.generateRandomNickname(),
         })
         .then((userInfo) => (newUser = userInfo));

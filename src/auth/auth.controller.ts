@@ -151,11 +151,11 @@ export class AuthController {
   })
   @Post('/apple')
   signInUserByApple(
-    @Body() body: any,
+    @Body() dto: signInUserByAppleReqDTO,
   ) {
     //: Promise<signInUserResDTO>
-    console.log(body)
-    //return this.authService.signInUserByApple(dto);
+    console.log(dto)
+    return this.authService.signInUserByApple(dto);
   }
 
   @Public()
