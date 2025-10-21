@@ -24,6 +24,7 @@ import * as fs from 'fs';
 import { signInUserByAppleReqDTO } from './dto/req/signInUserByApple.req.dto';
 import { signInUserResDTO } from './dto/res/signInUser.res.dto';
 import jwkToPem = require('jwk-to-pem');
+import { Response, Request } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -486,7 +487,15 @@ export class AuthService {
     }
   }
 
-  async signInUserByApple(dto: signInUserByAppleReqDTO): Promise<signInUserResDTO> {
+  async signInUserByApple(dto: signInUserByAppleReqDTO, res: Response, req: Request): Promise<void> {
+
+    // API 접근 제한 (리다이렉트 보안 문제)
+    const allowedOrigins = ['https://ramenroad.com', 'https://ra-ising.com'];
+    const originUrl = req.headers.origin;
+
+    if (!allowedOrigins.includes(originUrl)) {
+      throw new InternalServerErrorException('허용되지 않은 origin입니다.');
+    }   
 
     const decodedAppleIdToken = this.jwtService.decode(dto.id_token, {
 			complete: true,
@@ -524,7 +533,7 @@ export class AuthService {
     console.log(verifiedPayload)
 
     //로그인 로직
-    //사용자 정보가 DB에 존재하는지 확인(카카오 고유 id로 확인)
+    //사용자 정보가 DB에 존재하는지 확인(애플 고유 id로 확인)
     const user = await this.userModel.findOne({
       appleId: String(verifiedPayload.sub),
     });
@@ -571,12 +580,7 @@ export class AuthService {
 
       await this.updateUserRtHash(newUser.id, tokens.refreshToken);
 
-      const response = {
-        type: 'signup',
-        ...tokens,
-      };
-
-      return response;
+      return res.redirect(308, `${originUrl}/oauth/apple?type=signUp&accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`);
     } else {
       //존재하는 경우, 로그인 토큰 발급
       const tokens = await this.getUserTokens(
@@ -586,12 +590,7 @@ export class AuthService {
       );
       await this.updateUserRtHash(user.id, tokens.refreshToken);
 
-      const response = {
-        type: 'signin',
-        ...tokens,
-      };
-
-      return response;
+      return res.redirect(308, `${originUrl}/oauth/apple?type=signIn&accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`);
     }
   }
 
