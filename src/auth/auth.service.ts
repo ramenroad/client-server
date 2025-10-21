@@ -502,9 +502,6 @@ export class AuthService {
 			complete: true,
 		});
 
-    console.log('디코딩 애플 id_token')
-    console.log(decodedAppleIdToken)
-
     //클라이언트 공개 키 받아오기
 		const applePublicKeyResponse = await axios.get(`https://appleid.apple.com/auth/oauth2/v2/keys`);
 
@@ -529,9 +526,6 @@ export class AuthService {
 			console.log(error);
 			throw new InternalServerErrorException("유효하지않은 애플 토큰입니다");
 		}
-
-    console.log('verifiedPayload')
-    console.log(verifiedPayload)
 
     //로그인 로직
     //사용자 정보가 DB에 존재하는지 확인(애플 고유 id로 확인)
