@@ -10,6 +10,7 @@ import { getAllBoardsResDTO } from './dto/res/getAllBoards.res.dto';
 import { Public } from 'src/common/decorators/public.decorator';
 import { getBoardDetailResDTO } from './dto/res/getBoardDetail.res.dto';
 import { updateBoardReqDTO } from './dto/req/updateBoard.req.dto';
+import { createCommentReqDTO } from './dto/req/createComment.req.dto';
 
 @Controller('community')
 export class CommunityController {
@@ -152,5 +153,110 @@ export class CommunityController {
     @Param('boardId') boardId: string,
   ): Promise<void> {
     return this.communityService.deleteBoard(user, boardId)
+  }
+
+  @ApiOperation({
+    summary: '게시글 좋아요 추가하기',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '게시글 좋아요 추가 성공',
+  })
+  @ApiResponse({
+    status: 400,
+    description: '이미 좋아요를 누른 게시글입니다.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: '게시글 정보 조회 실패',
+  })
+  @ApiResponse({
+    status: 500,
+    description: '게시글 좋아요 추가 실패',
+  })
+  @ApiBearerAuth('accessToken')
+  @Post('/board/:boardId/like')
+  addBoardLike(
+    @User() user: JwtPayload,
+    @Param('boardId') boardId: string,
+  ): Promise<void> {
+    return this.communityService.addBoardLike(user, boardId)
+  }
+
+  @ApiOperation({
+    summary: '게시글 좋아요 취소하기',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '게시글 좋아요 취소 성공',
+  })
+  @ApiResponse({
+    status: 404,
+    description: '게시글 정보 조회 실패',
+  })
+  @ApiResponse({
+    status: 500,
+    description: '게시글 좋아요 취소 실패',
+  })
+  @ApiBearerAuth('accessToken')
+  @Delete('/board/:boardId/like')
+  deleteBoardLike(
+    @User() user: JwtPayload,
+    @Param('boardId') boardId: string,
+  ): Promise<void> {
+    return this.communityService.deleteBoardLike(user, boardId)
+  }
+
+  @ApiOperation({
+    summary: '댓글/답글 작성하기'
+  })
+  @ApiResponse({
+    status: 200,
+    description: '댓글/답글 작성 성공',
+  })
+  @ApiResponse({
+    status: 404,
+    description: '게시글 정보 조회 실패',
+  })
+  @ApiResponse({
+    status: 406,
+    description: '삭제된 게시글입니다.',
+  })
+  @ApiResponse({
+    status: 500,
+    description: '댓글/답글 작성 실패',
+  })
+  @ApiBearerAuth('accessToken')
+  @Post('/board/:boardId/comment')
+  createComment(
+    @User() user: JwtPayload,
+    @Param('boardId') boardId: string,
+    @Body() dto: createCommentReqDTO,
+  ): Promise<void> {
+    return this.communityService.createComment(user, boardId, dto)
+  }
+
+  @ApiOperation({
+    summary: '댓글 불러오기'
+  })
+  @ApiResponse({
+    status: 200,
+    description: '댓글 불러오기 성공',
+  })
+  @ApiResponse({
+    status: 404,
+    description: '댓글 정보 조회 실패',
+  })
+  @ApiResponse({
+    status: 500,
+    description: '댓글 불러오기 실패',
+  })
+  @ApiBearerAuth('accessToken')
+  @Get('/board/:boardId/comment')
+  getComments(
+    @User() user: JwtPayload,
+    @Param('boardId') boardId: string,
+  ) {
+    return this.communityService.getComments(user, boardId)
   }
 }

@@ -6,10 +6,10 @@ import { Document, Schema as MongooseSchema } from 'mongoose';
   versionKey: false,
 })
 export class Comment extends Document {
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Board', required: true }) // ★ 1. 어느 게시글(Board) 소속인지
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'board', required: true }) // ★ 1. 어느 게시글(Board) 소속인지
   boardId: MongooseSchema.Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'user', required: true })
   userId: MongooseSchema.Types.ObjectId;
 
   @Prop({ required: true })
@@ -17,6 +17,9 @@ export class Comment extends Document {
 
   @Prop({ required: true, default: 0 })
   likeCount: number;
+
+  @Prop({ required: true, default: [] })
+  likeUserIds: string[];
 
   // --- 여기부터 대댓글을 위한 필드 ---
   @Prop({
@@ -26,9 +29,9 @@ export class Comment extends Document {
   })
   parentCommentId: MongooseSchema.Types.ObjectId | null;
 
-  @Prop({
-    type: Number,
-    default: 0,
+  @Prop({ 
+    required: true, 
+    default: 0 
   })
   depth: number;
 

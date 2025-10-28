@@ -59,6 +59,13 @@ export class getBoardDetailResDTO {
     likeCount: number;
 
     @ApiProperty({
+        description: '좋아요를 누른 사용자 ID 목록',
+        example: ['67d14c7923beabe6d9a470fa', '67d14c7923beabe6d9a470fb'],
+        type: [String],
+    })
+    likeUserIds: string[];  
+
+    @ApiProperty({
         description: '조회수',
         example: 0,
     })

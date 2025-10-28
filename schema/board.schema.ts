@@ -21,6 +21,9 @@ export class Board extends Document {
   @Prop({ required: true, default: 0 })
   likeCount: number
 
+  @Prop({ required: true, default: [] })
+  likeUserIds: string[];
+
   @Prop({ required: true, default: 0 })
   viewCount: number
 
