@@ -13,6 +13,8 @@ import { updateBoardReqDTO } from './dto/req/updateBoard.req.dto';
 import { createCommentReqDTO } from './dto/req/createComment.req.dto';
 import { CommentNode } from './interfaces/commentNode.interface';
 import { user } from 'schema/user.schema';
+import { updateCommentReqDTO } from './dto/req/uodateComment.req.dto';
+import { CommentNodeResDTO } from './dto/res/getComments.res.dto';
 
 @Injectable()
 export class CommunityService {
@@ -224,10 +226,9 @@ export class CommunityService {
         await this.boardModel.findByIdAndUpdate(boardId, { $inc: { commentCount: 1 } });
     }
 
-    async getComments(user: JwtPayload, boardId: string) {
+    async getComments(user: JwtPayload, boardId: string): Promise<CommentNodeResDTO[]> {
 
         const allCommentsData = await this.commentModel.find({ boardId: boardId })
-            .where({ isDeleted: false })
             .select('_id userId body likeCount likeUserIds parentCommentId depth createdAt updatedAt isDeleted deletedAt')
             .populate({ path: 'userId', select: '_id nickname profileImageUrl' })
             .sort({ createdAt: 'asc' })
@@ -246,7 +247,7 @@ export class CommunityService {
             commentMap.set(comment._id.toString(), comment);
         });
 
-        // 5. 2차 순회: 부모-자식 관계 연결 (트리 조립)
+        // 2차 순회: 부모-자식 관계 연결 (트리 조립)
         allComments.forEach(comment => {
             if (comment.parentCommentId) {
                 const parent = commentMap.get(comment.parentCommentId.toString());
@@ -268,5 +269,42 @@ export class CommunityService {
         );
 
         return sortedCommentTree;
+    }
+
+    async deleteComment(user: JwtPayload, boardId: string, commentId: string): Promise<void> {
+
+        const comment = await this.commentModel.findById(commentId);
+
+        if (!comment) {
+            throw new NotFoundException();
+        }
+        
+        if (comment.isDeleted) {
+            throw new NotAcceptableException('삭제된 댓글입니다.');
+        }
+
+        if (String(comment.userId) != user.id) {
+            throw new ForbiddenException('댓글 삭제 권한 없음');
+        }
+        
+        await this.commentModel.findByIdAndUpdate(commentId, { isDeleted: true, deletedAt: new Date() });
+    }
+
+    async updateComment(user: JwtPayload, boardId: string, commentId: string, dto: updateCommentReqDTO): Promise<void> {
+        const comment = await this.commentModel.findById(commentId); 
+    
+        if (!comment) {
+            throw new NotFoundException();
+        }
+        
+        if (comment.isDeleted) {
+            throw new NotAcceptableException('삭제된 댓글입니다.');
+        }
+        
+        if (String(comment.userId) != user.id) {
+            throw new ForbiddenException('댓글 수정 권한 없음');
+        }
+        
+        await this.commentModel.findByIdAndUpdate(commentId, { body: dto.body });
     }
 }

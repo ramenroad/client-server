@@ -11,6 +11,9 @@ import { Public } from 'src/common/decorators/public.decorator';
 import { getBoardDetailResDTO } from './dto/res/getBoardDetail.res.dto';
 import { updateBoardReqDTO } from './dto/req/updateBoard.req.dto';
 import { createCommentReqDTO } from './dto/req/createComment.req.dto';
+import { CommentNode } from './interfaces/commentNode.interface';
+import { updateCommentReqDTO } from './dto/req/uodateComment.req.dto';
+import { CommentNodeResDTO } from './dto/res/getComments.res.dto';
 
 @Controller('community')
 export class CommunityController {
@@ -256,7 +259,58 @@ export class CommunityController {
   getComments(
     @User() user: JwtPayload,
     @Param('boardId') boardId: string,
-  ) {
+  ): Promise<CommentNodeResDTO[]> {
     return this.communityService.getComments(user, boardId)
+  }
+
+  @ApiOperation({
+    summary: '댓글 삭제하기',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '댓글 삭제 성공',
+  })
+  @ApiResponse({
+    status: 404,
+    description: '댓글 정보 조회 실패',
+  })
+  @ApiResponse({
+    status: 500,
+    description: '댓글 삭제 실패',
+  })
+  @ApiBearerAuth('accessToken')
+  @Delete('/board/:boardId/comment/:commentId')
+  deleteComment(
+    @User() user: JwtPayload,
+    @Param('boardId') boardId: string,
+    @Param('commentId') commentId: string,
+  ): Promise<void> {
+    return this.communityService.deleteComment(user, boardId, commentId)
+  }
+
+  @ApiOperation({
+    summary: '댓글 수정하기',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '댓글 수정 성공',
+  })
+  @ApiResponse({
+    status: 404,
+    description: '댓글 정보 조회 실패',
+  })
+  @ApiResponse({
+    status: 500,
+    description: '댓글 수정 실패',
+  })
+  @ApiBearerAuth('accessToken')
+  @Patch('/board/:boardId/comment/:commentId')
+  updateComment(
+    @User() user: JwtPayload,
+    @Param('boardId') boardId: string,
+    @Param('commentId') commentId: string,
+    @Body() dto: updateCommentReqDTO,
+  ): Promise<void> {
+    return this.communityService.updateComment(user, boardId, commentId, dto)
   }
 }
