@@ -307,4 +307,40 @@ export class CommunityService {
         
         await this.commentModel.findByIdAndUpdate(commentId, { body: dto.body });
     }
+
+    async addCommentLike(user: JwtPayload, boardId: string, commentId: string): Promise<void> {
+        const comment = await this.commentModel.findById(commentId);
+        
+        if (!comment) {
+            throw new NotFoundException();
+        }
+        
+        if (comment.isDeleted) {
+            throw new NotAcceptableException('삭제된 댓글입니다.');
+        }
+        
+        if (comment.likeUserIds.includes(user.id)) {
+            throw new BadRequestException('이미 좋아요를 누른 댓글입니다.');
+        }
+        
+        await this.commentModel.findByIdAndUpdate(commentId, { $inc: { likeCount: 1 }, $push: { likeUserIds: user.id } });
+    }
+
+    async deleteCommentLike(user: JwtPayload, boardId: string, commentId: string): Promise<void> {
+        const comment = await this.commentModel.findById(commentId);
+        
+        if (!comment) {
+            throw new NotFoundException();
+        }
+        
+        if (comment.isDeleted) {
+            throw new NotAcceptableException('삭제된 댓글입니다.');
+        }
+        
+        if (!comment.likeUserIds.includes(user.id)) {
+            throw new BadRequestException('좋아요를 누른 댓글이 아닙니다.');
+        }
+        
+        await this.commentModel.findByIdAndUpdate(commentId, { $inc: { likeCount: -1 }, $pull: { likeUserIds: user.id } });
+    }
 }

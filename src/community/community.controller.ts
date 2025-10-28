@@ -313,4 +313,54 @@ export class CommunityController {
   ): Promise<void> {
     return this.communityService.updateComment(user, boardId, commentId, dto)
   }
+
+  @ApiOperation({
+    summary: '댓글 좋아요',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '댓글 좋아요 성공',
+  })
+  @ApiResponse({
+    status: 404,
+    description: '댓글 정보 조회 실패',
+  })
+  @ApiResponse({
+    status: 500,
+    description: '댓글 좋아요 실패',
+  })
+  @ApiBearerAuth('accessToken')
+  @Post('/board/:boardId/comment/:commentId/like')
+  addCommentLike(
+    @User() user: JwtPayload,
+    @Param('boardId') boardId: string,
+    @Param('commentId') commentId: string,
+  ): Promise<void> {
+    return this.communityService.addCommentLike(user, boardId, commentId)
+  }
+
+  @ApiOperation({
+    summary: '댓글 좋아요 취소하기',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '댓글 좋아요 취소 성공',
+  })
+  @ApiResponse({
+    status: 404,
+    description: '댓글 정보 조회 실패',
+  })
+  @ApiResponse({
+    status: 500,
+    description: '댓글 좋아요 취소 실패',
+  })
+  @ApiBearerAuth('accessToken')
+  @Delete('/board/:boardId/comment/:commentId/like')
+  deleteCommentLike(
+    @User() user: JwtPayload,
+    @Param('boardId') boardId: string,
+    @Param('commentId') commentId: string,
+  ): Promise<void> {
+    return this.communityService.deleteCommentLike(user, boardId, commentId)
+  }
 }
