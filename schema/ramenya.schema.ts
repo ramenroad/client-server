@@ -184,6 +184,12 @@ export class ramenya extends Document {
     default: [],
   })
   menuBoard: MenuBoard[];
+
+  @Prop({
+    required: false,
+    default: false,
+  })
+  isDeleted?: boolean;
 }
 
 export const ramenyaSchema = SchemaFactory.createForClass(ramenya);

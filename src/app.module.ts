@@ -12,6 +12,7 @@ import { CommonService } from './common/common.service';
 import { CommonModule } from './common/common.module';
 import { SearchModule } from './search/search.module';
 import { SentryGlobalFilter, SentryModule } from '@sentry/nestjs/setup';
+import { CommunityModule } from './community/community.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { SentryGlobalFilter, SentryModule } from '@sentry/nestjs/setup';
     ReviewModule,
     CommonModule,
     SearchModule,
+    CommunityModule,
   ],
   controllers: [],
   providers: [

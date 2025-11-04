@@ -67,7 +67,7 @@ export class RamenyaService {
     const ramenya = await this.ramenyaModel
       .findById(id)
       .select(
-        'name thumbnailUrl genre region address latitude longitude contactNumber instagramProfile businessHours recommendedMenu ramenroadReview isSelfmadeNoodle rating reviewCount menus reviews kakaoMapUrl kakaoMapDeepLink naverMapUrl naverMapDeepLink googleMapUrl googleMapDeepLink menuBoard',
+        'name thumbnailUrl genre region address latitude longitude contactNumber instagramProfile businessHours recommendedMenu ramenroadReview isSelfmadeNoodle rating reviewCount menus reviews kakaoMapUrl kakaoMapDeepLink naverMapUrl naverMapDeepLink googleMapUrl googleMapDeepLink menuBoard isDeleted',
       )
       .populate({
         path: 'reviews',
@@ -81,6 +81,10 @@ export class RamenyaService {
 
     if (!ramenya) {
       throw new HttpException('Ramenya not found', HttpStatus.NOT_FOUND);
+    }
+
+    if (ramenya.isDeleted) {
+      throw new NotFoundException('존재하지 않는 라멘 매장입니다.');
     }
 
     return ramenya;
