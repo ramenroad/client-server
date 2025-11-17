@@ -30,6 +30,7 @@ import { getNoticesResDTO } from './dto/res/getNotices.res.dto';
 import { getNoticeResDTO } from './dto/res/getNotice.res.dto';
 import { createInquiryReqDTO } from './dto/req/createInquiry.req.dto';
 import { Express } from 'express';
+import { getMyPostsResDTO } from './dto/res/getMyPost.res.dto';
 
 @Controller('mypage')
 export class MypageController {
@@ -195,5 +196,19 @@ export class MypageController {
   @Post('/inquiry')
   createInquiry(@User() user: JwtPayload, @Body() dto: createInquiryReqDTO): Promise<void> {
     return this.mypageService.createInquiry(user, dto);
+  }
+
+  @ApiOperation({
+    'summary': '내가 쓴 게시글 조회',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '내가 쓴 게시글 조회 성공',
+    type: getMyPostsResDTO,
+  })
+  @ApiBearerAuth('accessToken')
+  @Get('/posts')
+  getMyPosts(@User() user: JwtPayload): Promise<getMyPostsResDTO[]> {
+    return this.mypageService.getMyPosts(user);
   }
 }

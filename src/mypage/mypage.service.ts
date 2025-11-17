@@ -20,6 +20,8 @@ import { getNoticeResDTO } from './dto/res/getNotice.res.dto';
 import { createInquiryReqDTO } from './dto/req/createInquiry.req.dto';
 import { inquiry } from 'schema/inquiry.schema';
 import { Express } from 'express';
+import { Board } from 'schema/board.schema';
+import { getMyPostsResDTO } from './dto/res/getMyPost.res.dto';
 
 @Injectable()
 export class MypageService {
@@ -29,6 +31,7 @@ export class MypageService {
     private readonly commonService: CommonService,
     @InjectModel('notice') private readonly noticeModel: Model<notice>,
     @InjectModel('inquiry') private readonly inquiryModel: Model<inquiry>,
+    @InjectModel('board') private readonly boardModel: Model<Board>,
   ) {}
 
   async updateNickname(user: JwtPayload, dto: updateNicknameReqDTO) {
@@ -151,5 +154,13 @@ export class MypageService {
     });
 
     return
+  }
+
+  async getMyPosts(user: JwtPayload): Promise<getMyPostsResDTO[]> {
+    const posts = await this.boardModel.find({ userId: user.id, isDeleted: false })
+    .select('_id category title body likeCount viewCount commentCount ImageUrls createdAt updatedAt')
+    
+    
+    return posts;
   }
 }
