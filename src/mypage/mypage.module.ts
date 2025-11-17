@@ -7,6 +7,7 @@ import { CommonService } from 'src/common/common.service';
 import { reviewSchema } from 'schema/review.schema';
 import { noticeSchema } from 'schema/notice.schema';
 import { inquirySchema } from 'schema/inquiry.schema';
+import { boardSchema } from 'schema/board.schema';
 
 @Module({
   imports: [MongooseModule.forFeature([
@@ -14,6 +15,7 @@ import { inquirySchema } from 'schema/inquiry.schema';
     { name: 'review', schema: reviewSchema },
     { name: 'notice', schema: noticeSchema },
     { name: 'inquiry', schema: inquirySchema },
+    { name: 'board', schema: boardSchema },
   ])],
   controllers: [MypageController],
   providers: [MypageService, CommonService],
