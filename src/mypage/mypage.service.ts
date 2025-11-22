@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { updateNicknameReqDTO } from './dto/req/updateNickname.req.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { user } from 'schema/user.schema';
 import { JwtPayload } from 'src/common/types/jwtpayloadtype';
 import { getMyInfoResDTO } from './dto/res/getMyInfo.res.dto';
@@ -22,6 +22,8 @@ import { inquiry } from 'schema/inquiry.schema';
 import { Express } from 'express';
 import { Board } from 'schema/board.schema';
 import { getMyPostsResDTO } from './dto/res/getMyPost.res.dto';
+import { ViewHistory } from 'schema/viewHistory.schema';
+import { getRecentViewedRamenyaResDTO } from './dto/res/getRecentViewedRamenya.res.dto';
 
 @Injectable()
 export class MypageService {
@@ -32,6 +34,7 @@ export class MypageService {
     @InjectModel('notice') private readonly noticeModel: Model<notice>,
     @InjectModel('inquiry') private readonly inquiryModel: Model<inquiry>,
     @InjectModel('board') private readonly boardModel: Model<Board>,
+    @InjectModel('viewHistory') private readonly viewHistoryModel: Model<ViewHistory>,
   ) {}
 
   async updateNickname(user: JwtPayload, dto: updateNicknameReqDTO) {
@@ -162,5 +165,16 @@ export class MypageService {
     
     
     return posts;
+  }
+
+  async getRecentViewedRamenya(user: JwtPayload): Promise<getRecentViewedRamenyaResDTO[]> {
+
+    const recentViewedRamenya = await this.viewHistoryModel.find({ user: new Types.ObjectId(user.id) })
+    .select('_id user ramenya lastViewedAt createdAt updatedAt')
+    .sort({ lastViewedAt: -1 })
+    .limit(30)
+    .populate({ path: 'ramenya', select: 'name genre rating reviewCount thumbnailUrl'})
+
+    return recentViewedRamenya;
   }
 }

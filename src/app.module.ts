@@ -13,6 +13,8 @@ import { CommonModule } from './common/common.module';
 import { SearchModule } from './search/search.module';
 import { SentryGlobalFilter, SentryModule } from '@sentry/nestjs/setup';
 import { CommunityModule } from './community/community.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { InteractionModule } from './interaction/interaction.module';
 
 @Module({
   imports: [
@@ -32,6 +34,8 @@ import { CommunityModule } from './community/community.module';
     CommonModule,
     SearchModule,
     CommunityModule,
+    EventEmitterModule.forRoot(),
+    InteractionModule,
   ],
   controllers: [],
   providers: [

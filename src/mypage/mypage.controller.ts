@@ -31,6 +31,7 @@ import { getNoticeResDTO } from './dto/res/getNotice.res.dto';
 import { createInquiryReqDTO } from './dto/req/createInquiry.req.dto';
 import { Express } from 'express';
 import { getMyPostsResDTO } from './dto/res/getMyPost.res.dto';
+import { getRecentViewedRamenyaResDTO } from './dto/res/getRecentViewedRamenya.res.dto';
 
 @Controller('mypage')
 export class MypageController {
@@ -210,5 +211,20 @@ export class MypageController {
   @Get('/posts')
   getMyPosts(@User() user: JwtPayload): Promise<getMyPostsResDTO[]> {
     return this.mypageService.getMyPosts(user);
+  }
+
+  @ApiOperation({
+    summary: '최근 조회한 라멘야 조회',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '최근 조회한 라멘야 조회 성공',
+    type: getRecentViewedRamenyaResDTO,
+    isArray: true,
+  })
+  @ApiBearerAuth('accessToken')
+  @Get('/recent-viewed-ramenya')
+  getRecentViewedRamenya(@User() user: JwtPayload): Promise<getRecentViewedRamenyaResDTO[]> {
+    return this.mypageService.getRecentViewedRamenya(user);
   }
 }
