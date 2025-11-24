@@ -32,6 +32,7 @@ import { createInquiryReqDTO } from './dto/req/createInquiry.req.dto';
 import { Express } from 'express';
 import { getMyPostsResDTO } from './dto/res/getMyPost.res.dto';
 import { getRecentViewedRamenyaResDTO } from './dto/res/getRecentViewedRamenya.res.dto';
+import { getMyCommentsResDTO } from './dto/res/getMyComments.res.dto';
 
 @Controller('mypage')
 export class MypageController {
@@ -206,11 +207,29 @@ export class MypageController {
     status: 200,
     description: '내가 쓴 게시글 조회 성공',
     type: getMyPostsResDTO,
+    isArray: true,
   })
   @ApiBearerAuth('accessToken')
   @Get('/posts')
   getMyPosts(@User() user: JwtPayload): Promise<getMyPostsResDTO[]> {
     return this.mypageService.getMyPosts(user);
+  }
+
+
+  @ApiOperation({
+    summary: '내가 쓴 댓글 조회',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '내가 쓴 댓글 조회 성공',
+    type: getMyCommentsResDTO,
+    isArray: true,
+  })
+  @ApiBearerAuth('accessToken')
+  @Get('/comments')
+  getMyComments(@User() user: JwtPayload) {
+    //TODO - DTO 타입 설정
+    return this.mypageService.getMyComments(user);
   }
 
   @ApiOperation({

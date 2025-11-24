@@ -24,6 +24,7 @@ import { Board } from 'schema/board.schema';
 import { getMyPostsResDTO } from './dto/res/getMyPost.res.dto';
 import { ViewHistory } from 'schema/viewHistory.schema';
 import { getRecentViewedRamenyaResDTO } from './dto/res/getRecentViewedRamenya.res.dto';
+import { getMyCommentsResDTO } from './dto/res/getMyComments.res.dto';
 
 @Injectable()
 export class MypageService {
@@ -35,6 +36,7 @@ export class MypageService {
     @InjectModel('inquiry') private readonly inquiryModel: Model<inquiry>,
     @InjectModel('board') private readonly boardModel: Model<Board>,
     @InjectModel('viewHistory') private readonly viewHistoryModel: Model<ViewHistory>,
+    @InjectModel('comment') private readonly commentModel: Model<Comment>,
   ) {}
 
   async updateNickname(user: JwtPayload, dto: updateNicknameReqDTO) {
@@ -176,5 +178,14 @@ export class MypageService {
     .populate({ path: 'ramenya', select: 'name genre rating reviewCount thumbnailUrl'})
 
     return recentViewedRamenya;
+  }
+
+  async getMyComments(user: JwtPayload) {
+    const comments = await this.commentModel
+      .find({ userId: user.id, isDeleted: false })
+      .select('_id boardId body depth likeCount createdAt updatedAt')
+      .sort({ createdAt: -1 });
+
+    return comments;
   }
 }
