@@ -21,6 +21,7 @@ import { CommonService } from 'src/common/common.service';
 import { v4 as uuidv4 } from 'uuid';
 import { deleteMenuBoardReqDTO } from './dto/req/deleteMenuBoard.req.dto';
 import { Express } from 'express';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class RamenyaService {
@@ -29,6 +30,7 @@ export class RamenyaService {
     @InjectModel('ramenyaGroup')
     private readonly ramenyaGroupModel: Model<ramenyaGroup>,
     private readonly commonService: CommonService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async getRamenyas(
@@ -63,7 +65,7 @@ export class RamenyaService {
     return ramenyas;
   }
 
-  async getRamenyaById(id: string): Promise<getRamenyaByIdResDTO> {
+  async getRamenyaById(id: string, userId?: string): Promise<getRamenyaByIdResDTO> {
     const ramenya = await this.ramenyaModel
       .findById(id)
       .select(
@@ -85,6 +87,14 @@ export class RamenyaService {
 
     if (ramenya.isDeleted) {
       throw new NotFoundException('존재하지 않는 라멘 매장입니다.');
+    }
+
+    // 라멘야 조회 이벤트 발생
+    if (userId) {
+      this.eventEmitter.emit('ramenya.viewed', {
+        userId,
+        ramenyaId: id,
+      });
     }
 
     return ramenya;

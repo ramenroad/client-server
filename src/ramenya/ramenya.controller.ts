@@ -7,6 +7,7 @@ import {
   Post,
   Query,
   UploadedFiles,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { RamenyaService } from './ramenya.service';
@@ -28,6 +29,7 @@ import { User } from 'src/common/decorators/user.decorator';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { deleteMenuBoardReqDTO } from './dto/req/deleteMenuBoard.req.dto';
 import { Express } from 'express';
+import { OptionalAtGuard } from 'src/common/guards/optional-at.guard';
 
 @Controller({ path: 'ramenya', version: '1' })
 export class RamenyaController {
@@ -129,18 +131,20 @@ export class RamenyaController {
   }
 
   @Public()
+  @UseGuards(OptionalAtGuard)
   @ApiOperation({
-    summary: '라멘야 상세 정보 조회',
-    description: '라멘야 id로 상세 정보를 조회합니다.',
+    summary: '라멘야 상세 정보 조회(로그인 선택)',
+    description: '라멘야 id로 상세 정보를 조회합니다. 로그인 시 조회한 라멘야 정보를 저장합니다.',
   })
   @ApiResponse({
     status: 200,
     description: '라멘야 상세 정보 조회 성공',
     type: getRamenyaByIdResDTO,
   })
+  @ApiBearerAuth('accessToken')
   @Get('/:id')
-  getRamenyaById(@Param('id') id: string): Promise<getRamenyaByIdResDTO> {
-    return this.ramenyaService.getRamenyaById(id);
+  getRamenyaById(@Param('id') id: string, @User() user?: JwtPayload): Promise<getRamenyaByIdResDTO> {
+    return this.ramenyaService.getRamenyaById(id, user?.id);
   }
 
   @Public()

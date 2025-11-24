@@ -8,6 +8,8 @@ import { reviewSchema } from 'schema/review.schema';
 import { noticeSchema } from 'schema/notice.schema';
 import { inquirySchema } from 'schema/inquiry.schema';
 import { boardSchema } from 'schema/board.schema';
+import { viewHistorySchema } from 'schema/viewHistory.schema';
+import { commentSchema } from 'schema/comment.schema';
 
 @Module({
   imports: [MongooseModule.forFeature([
@@ -16,6 +18,8 @@ import { boardSchema } from 'schema/board.schema';
     { name: 'notice', schema: noticeSchema },
     { name: 'inquiry', schema: inquirySchema },
     { name: 'board', schema: boardSchema },
+    { name: 'viewHistory', schema: viewHistorySchema },
+    { name: 'comment', schema: commentSchema },
   ])],
   controllers: [MypageController],
   providers: [MypageService, CommonService],
