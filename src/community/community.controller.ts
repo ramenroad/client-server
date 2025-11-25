@@ -63,8 +63,9 @@ export class CommunityController {
   @Get('/boards')
   getAllBoards(
     @Query('page') page?: number,
-    @Query('limit') limit?: number,): Promise<getAllBoardsResDTO> {
-    return this.communityService.getAllBoards(page, limit)
+    @Query('limit') limit?: number,
+    @Query('category') category?: string,): Promise<getAllBoardsResDTO> {
+    return this.communityService.getAllBoards(page, limit, category)
   }
 
   @ApiOperation({

@@ -54,17 +54,46 @@ export class CommunityService {
         return
     }
 
-    async getAllBoards(page?: number, limit?: number): Promise<getAllBoardsResDTO> {
+    async getAllBoards(page?: number, limit?: number, category?: string): Promise<getAllBoardsResDTO> {
 
         const total = await this.boardModel.countDocuments();
         const lastPage = Math.ceil(total / limit);
 
-        const boards = await this.boardModel.find({ isDeleted: false })
+        if (limit >= 500) {
+            throw new BadRequestException('limit은 500개를 초과할 수 없습니다.');
+        }
+
+        let boards;
+
+        if (category == 'all' || category == undefined) {
+            boards = await this.boardModel.find({ isDeleted: false })
             .skip((page - 1) * limit)
             .limit(limit)
             .sort({ createdAt: -1 })
             .select('_id category title body likeCount viewCount commentCount ImageUrls createdAt updatedAt')
             .populate({ path: 'userId', select: 'nickname profileImageUrl' })
+        } else if (category == 'ranking') {
+            const sevenDaysAgo = new Date();
+            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 8);
+            
+            boards = await this.boardModel.find({ 
+                isDeleted: false,
+                createdAt: { $gte: sevenDaysAgo }
+            })
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .sort({ likeCount: -1 })
+            .select('_id category title body likeCount viewCount commentCount ImageUrls createdAt updatedAt')
+            .populate({ path: 'userId', select: 'nickname profileImageUrl' })
+        } else {
+            boards = await this.boardModel.find({ isDeleted: false })
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .where({ category: category })
+            .sort({ createdAt: -1 })
+            .select('_id category title body likeCount viewCount commentCount ImageUrls createdAt updatedAt')
+            .populate({ path: 'userId', select: 'nickname profileImageUrl' })
+        }
 
         return {
             lastPage: lastPage,
