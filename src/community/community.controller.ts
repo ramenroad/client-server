@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UploadedFiles, UseInterceptors, BadRequestException, Get, Query, Param, Delete, Patch } from '@nestjs/common';
+import { Body, Controller, Post, UploadedFiles, UseInterceptors, BadRequestException, Get, Query, Param, Delete, Patch, UseGuards } from '@nestjs/common';
 import { CommunityService } from './community.service';
 import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { FilesInterceptor } from '@nestjs/platform-express';
@@ -8,6 +8,7 @@ import { Express } from 'express';
 import { createBoardReqDTO } from './dto/req/createBoard.req.dto';
 import { getAllBoardsResDTO } from './dto/res/getAllBoards.res.dto';
 import { Public } from 'src/common/decorators/public.decorator';
+import { OptionalAtGuard } from 'src/common/guards/optional-at.guard';
 import { getBoardDetailResDTO } from './dto/res/getBoardDetail.res.dto';
 import { updateBoardReqDTO } from './dto/req/updateBoard.req.dto';
 import { createCommentReqDTO } from './dto/req/createComment.req.dto';
@@ -85,10 +86,13 @@ export class CommunityController {
     description: '게시글 불러오기 실패',
   })
   @Public()
+  @UseGuards(OptionalAtGuard)
   @Get('/board/:boardId')
   getBoardDetail(
-    @Param('boardId') boardId: string): Promise<getBoardDetailResDTO> {
-    return this.communityService.getBoardDetail(boardId)
+    @Param('boardId') boardId: string,
+    @User() user?: JwtPayload,
+  ): Promise<getBoardDetailResDTO> {
+    return this.communityService.getBoardDetail(boardId, user?.id)
   }
 
   @ApiOperation({
