@@ -183,8 +183,17 @@ export class MypageService {
   async getMyComments(user: JwtPayload) {
     const comments = await this.commentModel
       .find({ userId: user.id, isDeleted: false })
-      .select('_id boardId body depth likeCount createdAt updatedAt')
-      .sort({ createdAt: -1 });
+      .select('_id boardId body depth likeCount parentCommentId createdAt updatedAt')
+      .sort({ createdAt: -1 })
+      // 본문(게시글) 제목/카테고리
+      .populate({ path: 'boardId', model: this.boardModel, select: 'category title' })
+      // 답글이면 부모(상위) 댓글 + 작성자 정보
+      .populate({
+        path: 'parentCommentId',
+        model: this.commentModel,
+        select: 'body userId',
+        populate: { path: 'userId', model: this.userModel, select: 'nickname profileImageUrl' },
+      });
 
     return comments;
   }

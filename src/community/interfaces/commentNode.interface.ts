@@ -25,4 +25,7 @@ export interface CommentNode {
     // --- 2. 트리를 만들기 위해 동적으로 추가할 필드 ---
     // (DB 스키마에는 존재하지 않음)
     replies: CommentNode[];
+
+    // 로그인한 유저의 좋아요 여부 (서버에서 계산해 주입)
+    isLiked: boolean;
   }

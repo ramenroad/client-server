@@ -101,7 +101,7 @@ export class CommunityService {
         };
     }
 
-    async getBoardDetail(boardId: string): Promise<getBoardDetailResDTO> {
+    async getBoardDetail(boardId: string, userId?: string): Promise<getBoardDetailResDTO> {
 
         const board = await this.boardModel.findById(boardId)
             .where({ isDeleted: false })
@@ -114,7 +114,10 @@ export class CommunityService {
 
         await this.boardModel.findByIdAndUpdate(boardId, { $inc: { viewCount: 1 } });
 
-        return board
+        // 로그인한 유저가 좋아요를 눌렀는지 여부 (비로그인 시 false)
+        const isLiked = userId ? board.likeUserIds.includes(userId) : false;
+
+        return { ...board.toObject(), isLiked } as unknown as getBoardDetailResDTO;
     }
 
     async updateBoard(user: JwtPayload, boardId: string, dto: updateBoardReqDTO, Images: Express.Multer.File[]): Promise<void> {
@@ -273,6 +276,8 @@ export class CommunityService {
         
         allComments.forEach(comment => {
             comment.replies = [];
+            // 로그인한 유저가 좋아요를 눌렀는지 여부 (답글 포함 모든 노드에 세팅)
+            comment.isLiked = user ? comment.likeUserIds.includes(user.id) : false;
             commentMap.set(comment._id.toString(), comment);
         });
 

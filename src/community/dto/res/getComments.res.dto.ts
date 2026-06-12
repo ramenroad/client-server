@@ -82,6 +82,14 @@ export class CommentNodeResDTO {
   likeUserIds: string[];
 
   @ApiProperty({
+    type: Boolean,
+    description: '현재 로그인한 사용자의 좋아요 여부',
+    example: false,
+  })
+  @IsBoolean()
+  isLiked: boolean;
+
+  @ApiProperty({
     type: String,
     nullable: true,
     description: '부모 댓글의 ObjectId (1차 댓글인 경우 null)',

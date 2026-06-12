@@ -63,7 +63,14 @@ export class getBoardDetailResDTO {
         example: ['67d14c7923beabe6d9a470fa', '67d14c7923beabe6d9a470fb'],
         type: [String],
     })
-    likeUserIds: string[];  
+    likeUserIds: string[];
+
+    @ApiProperty({
+        description: '현재 로그인한 사용자의 좋아요 여부 (비로그인 시 false)',
+        example: false,
+        type: Boolean,
+    })
+    isLiked: boolean;
 
     @ApiProperty({
         description: '조회수',
