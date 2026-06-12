@@ -1,6 +1,6 @@
 import { BadRequestException, ForbiddenException, Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import mongoose, { Model } from 'mongoose';
+import mongoose, { FilterQuery, Model } from 'mongoose';
 import { Board } from 'schema/board.schema';
 import { JwtPayload } from 'src/common/types/jwtpayloadtype';
 import { createBoardReqDTO } from './dto/req/createBoard.req.dto';
@@ -56,12 +56,24 @@ export class CommunityService {
 
     async getAllBoards(page?: number, limit?: number, category?: string): Promise<getAllBoardsResDTO> {
 
-        const total = await this.boardModel.countDocuments();
-        const lastPage = Math.ceil(total / limit);
-
         if (limit >= 500) {
             throw new BadRequestException('limit은 500개를 초과할 수 없습니다.');
         }
+
+        // lastPage는 실제 목록과 동일한 조건으로 카운트해야 정확하다.
+        // (필터 없는 countDocuments()는 다른 카테고리/삭제 글까지 세어 페이지 수가 과다 계산됨)
+        let countFilter: FilterQuery<Board> = { isDeleted: false };
+
+        if (category == 'ranking') {
+            const sevenDaysAgo = new Date();
+            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 8);
+            countFilter = { isDeleted: false, createdAt: { $gte: sevenDaysAgo } };
+        } else if (category && category != 'all') {
+            countFilter = { isDeleted: false, category: category };
+        }
+
+        const total = await this.boardModel.countDocuments(countFilter);
+        const lastPage = Math.ceil(total / limit);
 
         let boards;
 
