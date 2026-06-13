@@ -147,6 +147,50 @@ export class RamenyaController {
     return this.ramenyaService.getRamenyaById(id, user?.id);
   }
 
+  @ApiOperation({
+    summary: '라멘야 저장(북마크) 추가',
+  })
+  @ApiResponse({
+    status: 201,
+    description: '라멘야 저장 성공',
+  })
+  @ApiResponse({
+    status: 400,
+    description: '이미 저장한 매장인 경우',
+  })
+  @ApiResponse({
+    status: 404,
+    description: '해당 ID의 라멘야가 존재하지 않는 경우',
+  })
+  @ApiBearerAuth('accessToken')
+  @Post('/:id/bookmark')
+  addBookmark(
+    @User() user: JwtPayload,
+    @Param('id') id: string,
+  ): Promise<void> {
+    return this.ramenyaService.addBookmark(user, id);
+  }
+
+  @ApiOperation({
+    summary: '라멘야 저장(북마크) 해제',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '라멘야 저장 해제 성공',
+  })
+  @ApiResponse({
+    status: 400,
+    description: '저장하지 않은 매장인 경우',
+  })
+  @ApiBearerAuth('accessToken')
+  @Delete('/:id/bookmark')
+  removeBookmark(
+    @User() user: JwtPayload,
+    @Param('id') id: string,
+  ): Promise<void> {
+    return this.ramenyaService.removeBookmark(user, id);
+  }
+
   @Public()
   @ApiOperation({
     summary: '라멘야 그룹 별 보기 조회',

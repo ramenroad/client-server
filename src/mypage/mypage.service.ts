@@ -25,6 +25,8 @@ import { getMyPostsResDTO } from './dto/res/getMyPost.res.dto';
 import { ViewHistory } from 'schema/viewHistory.schema';
 import { getRecentViewedRamenyaResDTO } from './dto/res/getRecentViewedRamenya.res.dto';
 import { getMyCommentsResDTO } from './dto/res/getMyComments.res.dto';
+import { Bookmark } from 'schema/bookmark.schema';
+import { getMyBookmarksResDTO } from './dto/res/getMyBookmarks.res.dto';
 
 @Injectable()
 export class MypageService {
@@ -37,6 +39,7 @@ export class MypageService {
     @InjectModel('board') private readonly boardModel: Model<Board>,
     @InjectModel('viewHistory') private readonly viewHistoryModel: Model<ViewHistory>,
     @InjectModel('comment') private readonly commentModel: Model<Comment>,
+    @InjectModel('bookmark') private readonly bookmarkModel: Model<Bookmark>,
   ) {}
 
   async updateNickname(user: JwtPayload, dto: updateNicknameReqDTO) {
@@ -178,6 +181,21 @@ export class MypageService {
     .populate({ path: 'ramenya', select: 'name genre rating reviewCount thumbnailUrl'})
 
     return recentViewedRamenya;
+  }
+
+  async getMyBookmarks(user: JwtPayload): Promise<getMyBookmarksResDTO[]> {
+    const bookmarks = await this.bookmarkModel
+      .find({ user: new Types.ObjectId(user.id) })
+      .select('_id user ramenya createdAt')
+      .sort({ createdAt: -1 })
+      .populate({
+        path: 'ramenya',
+        select: 'name genre rating reviewCount thumbnailUrl',
+        match: { isDeleted: { $ne: true } },
+      });
+
+    // 삭제된 매장(populate 결과 null)은 목록에서 제외
+    return bookmarks.filter((bookmark) => bookmark.ramenya != null);
   }
 
   async getMyComments(user: JwtPayload) {

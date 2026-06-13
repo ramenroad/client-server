@@ -33,6 +33,7 @@ import { Express } from 'express';
 import { getMyPostsResDTO } from './dto/res/getMyPost.res.dto';
 import { getRecentViewedRamenyaResDTO } from './dto/res/getRecentViewedRamenya.res.dto';
 import { getMyCommentsResDTO } from './dto/res/getMyComments.res.dto';
+import { getMyBookmarksResDTO } from './dto/res/getMyBookmarks.res.dto';
 
 @Controller('mypage')
 export class MypageController {
@@ -245,5 +246,20 @@ export class MypageController {
   @Get('/recent-viewed-ramenya')
   getRecentViewedRamenya(@User() user: JwtPayload): Promise<getRecentViewedRamenyaResDTO[]> {
     return this.mypageService.getRecentViewedRamenya(user);
+  }
+
+  @ApiOperation({
+    summary: '저장한 라멘야 조회',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '저장한 라멘야 조회 성공',
+    type: getMyBookmarksResDTO,
+    isArray: true,
+  })
+  @ApiBearerAuth('accessToken')
+  @Get('/bookmarks')
+  getMyBookmarks(@User() user: JwtPayload): Promise<getMyBookmarksResDTO[]> {
+    return this.mypageService.getMyBookmarks(user);
   }
 }
