@@ -8,11 +8,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { getRamenyasResDTO } from './dto/res/getRamenyas.res.dto';
 import { getRamenyaByIdResDTO } from './dto/res/getRamenyaById.res.dto';
 import { ramenya } from 'schema/ramenya.schema';
 import { ramenyaGroup } from 'schema/ramenyaGroup.schema';
+import { Bookmark } from 'schema/bookmark.schema';
 import { getRamenyaGroupsResDTO } from './dto/res/getRamenyaGroups.res.dto';
 import { getNearByRamenyaResDTO } from './dto/res/getNearByRamenya.res.dto';
 import { JwtPayload } from 'src/common/types/jwtpayloadtype';
@@ -29,6 +30,7 @@ export class RamenyaService {
     @InjectModel('ramenya') private readonly ramenyaModel: Model<ramenya>,
     @InjectModel('ramenyaGroup')
     private readonly ramenyaGroupModel: Model<ramenyaGroup>,
+    @InjectModel('bookmark') private readonly bookmarkModel: Model<Bookmark>,
     private readonly commonService: CommonService,
     private readonly eventEmitter: EventEmitter2,
   ) {}
@@ -97,7 +99,50 @@ export class RamenyaService {
       });
     }
 
-    return ramenya;
+    const isBookmarked = userId
+      ? (await this.bookmarkModel.exists({
+          user: new Types.ObjectId(userId),
+          ramenya: ramenya._id,
+        })) != null
+      : false;
+
+    return { ...ramenya.toObject(), isBookmarked };
+  }
+
+  async addBookmark(user: JwtPayload, ramenyaId: string): Promise<void> {
+    const ramenya = await this.ramenyaModel.findById(ramenyaId);
+
+    if (!ramenya || ramenya.isDeleted) {
+      throw new NotFoundException('존재하지 않는 라멘 매장입니다.');
+    }
+
+    try {
+      await this.bookmarkModel.create({
+        user: new Types.ObjectId(user.id),
+        ramenya: ramenya._id,
+      });
+    } catch (error) {
+      // 동시 요청으로 unique index에 걸린 경우
+      if (error.code === 11000) {
+        throw new BadRequestException('이미 저장한 매장입니다.');
+      }
+      throw error;
+    }
+
+    return;
+  }
+
+  async removeBookmark(user: JwtPayload, ramenyaId: string): Promise<void> {
+    const bookmark = await this.bookmarkModel.findOneAndDelete({
+      user: new Types.ObjectId(user.id),
+      ramenya: new Types.ObjectId(ramenyaId),
+    });
+
+    if (!bookmark) {
+      throw new BadRequestException('저장하지 않은 매장입니다.');
+    }
+
+    return;
   }
 
   async getRamenyasRegion(): Promise<Array<string>> {

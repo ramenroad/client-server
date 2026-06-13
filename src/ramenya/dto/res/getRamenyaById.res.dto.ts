@@ -170,4 +170,10 @@ export class getRamenyaByIdResDTO {
 
   @ApiProperty({ type: MenuBoard, isArray: true })
   menuBoard?: MenuBoard[];
+
+  @ApiProperty({
+    description: '로그인한 유저의 매장 저장(북마크) 여부. 비로그인 시 false',
+    example: false,
+  })
+  isBookmarked: boolean;
 }
