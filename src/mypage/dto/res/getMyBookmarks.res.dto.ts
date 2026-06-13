@@ -1,6 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 
+class BusinessHour {
+  @ApiProperty({ example: 'mon' })
+  day: string;
+
+  @ApiProperty({ required: false, example: '11:00 ~ 19:30' })
+  operatingTime?: string;
+
+  @ApiProperty({ required: false, example: '15:00 ~ 17:00' })
+  breakTime?: string;
+
+  @ApiProperty({ example: true })
+  isOpen: boolean;
+}
+
 class RamenyaInfo {
   @ApiProperty({
     type: String,
@@ -38,6 +52,30 @@ class RamenyaInfo {
     example: 37,
   })
   reviewCount: number;
+
+  @ApiProperty({
+    description: '주소',
+    example: '서울 중구 필동로 22 1층',
+  })
+  address: string;
+
+  @ApiProperty({
+    description: '위도',
+    example: 37.559639954,
+  })
+  latitude: number;
+
+  @ApiProperty({
+    description: '경도',
+    example: 126.996047038,
+  })
+  longitude: number;
+
+  @ApiProperty({
+    type: [BusinessHour],
+    description: '영업시간',
+  })
+  businessHours: BusinessHour[];
 }
 
 export class getMyBookmarksResDTO {

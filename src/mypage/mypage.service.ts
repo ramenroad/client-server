@@ -190,7 +190,7 @@ export class MypageService {
       .sort({ createdAt: -1 })
       .populate({
         path: 'ramenya',
-        select: 'name genre rating reviewCount thumbnailUrl',
+        select: 'name genre rating reviewCount thumbnailUrl latitude longitude address businessHours',
         match: { isDeleted: { $ne: true } },
       });
 
