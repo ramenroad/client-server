@@ -1,11 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Schema } from "mongoose";
+import { Types } from "mongoose";
 
 export class getNoticesResDTO {
     @ApiProperty({
         type: String,
     })
-    _id: Schema.Types.ObjectId;
+    _id: Types.ObjectId;
 
     @ApiProperty({
         type: String,
