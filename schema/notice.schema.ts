@@ -1,12 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema } from 'mongoose';
+import { Document, Schema as MongooseSchema, Types } from 'mongoose';
 
 @Schema({
     timestamps: { createdAt: true, updatedAt: false },
     versionKey: false,
 })
 export class notice extends Document {
-  _id: MongooseSchema.Types.ObjectId;
+  _id: Types.ObjectId;
 
   @Prop({
     required: true,
@@ -15,7 +15,7 @@ export class notice extends Document {
   type: string;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'admin', required: true })
-  writerId: MongooseSchema.Types.ObjectId;
+  writerId: Types.ObjectId;
 
   @Prop({
     required: true,
