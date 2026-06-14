@@ -15,6 +15,7 @@ import { SentryGlobalFilter, SentryModule } from '@sentry/nestjs/setup';
 import { CommunityModule } from './community/community.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { InteractionModule } from './interaction/interaction.module';
+import { RamenCalendarModule } from './ramen-calendar/ramen-calendar.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { InteractionModule } from './interaction/interaction.module';
     CommunityModule,
     EventEmitterModule.forRoot(),
     InteractionModule,
+    RamenCalendarModule,
   ],
   controllers: [],
   providers: [
