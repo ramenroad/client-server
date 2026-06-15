@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { ramenCalendar } from 'schema/ramen-calendar.schema';
 import { JwtPayload } from 'src/common/types/jwtpayloadtype';
 import { createRamenCalendarReqDTO } from './dto/req/createRamenCalendar.req.dto';
+import { updateRamenCalendarReqDTO } from './dto/req/updateRamenCalendar.req.dto';
 import { RamenCalendarEntryResDTO } from './dto/res/ramenCalendarEntry.res.dto';
 
 @Injectable()
@@ -25,7 +26,7 @@ export class RamenCalendarService {
 
     const entries = await this.ramenCalendarModel
       .find({ userId: user.id, visitDate: { $gte: start, $lte: end } })
-      .select('_id visitDate ramenyaName ramenyaId menus createdAt updatedAt')
+      .select('_id visitDate ramenyaName ramenyaId menus price createdAt updatedAt')
       .sort({ visitDate: -1, createdAt: -1 })
       .lean();
 
@@ -39,9 +40,38 @@ export class RamenCalendarService {
       ramenyaName: dto.ramenyaName,
       ramenyaId: dto.ramenyaId ?? null,
       menus: dto.menus ?? [],
+      price: dto.price ?? null,
     });
 
     return entry as unknown as RamenCalendarEntryResDTO;
+  }
+
+  async updateEntry(
+    user: JwtPayload,
+    id: string,
+    dto: updateRamenCalendarReqDTO,
+  ): Promise<RamenCalendarEntryResDTO> {
+    const entry = await this.ramenCalendarModel.findById(id);
+
+    if (!entry) {
+      throw new NotFoundException('캘린더 기록 조회 실패');
+    }
+
+    if (String(entry.userId) != user.id) {
+      throw new ForbiddenException('캘린더 기록 수정 권한 없음');
+    }
+
+    entry.set({
+      ...(dto.visitDate !== undefined ? { visitDate: dto.visitDate } : {}),
+      ...(dto.ramenyaName !== undefined ? { ramenyaName: dto.ramenyaName } : {}),
+      ...(dto.ramenyaId !== undefined ? { ramenyaId: dto.ramenyaId ?? null } : {}),
+      ...(dto.menus !== undefined ? { menus: dto.menus } : {}),
+      ...(dto.price !== undefined ? { price: dto.price ?? null } : {}),
+    });
+
+    const updatedEntry = await entry.save();
+
+    return updatedEntry as unknown as RamenCalendarEntryResDTO;
   }
 
   async deleteEntry(user: JwtPayload, id: string): Promise<void> {

@@ -23,6 +23,10 @@ export class ramenCalendar extends Document {
   @Prop({ type: [String], default: [] })
   menus: string[];
 
+  // 지불 금액(원). 0 이상의 정수 KRW. 입력 안 하면 null.
+  @Prop({ type: Number, required: false, default: null })
+  price: number | null;
+
   createdAt: Date;
   updatedAt: Date;
 }
