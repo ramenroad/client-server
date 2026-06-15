@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { User } from 'src/common/decorators/user.decorator';
 import { JwtPayload } from 'src/common/types/jwtpayloadtype';
 import { RamenCalendarService } from './ramen-calendar.service';
 import { createRamenCalendarReqDTO } from './dto/req/createRamenCalendar.req.dto';
+import { updateRamenCalendarReqDTO } from './dto/req/updateRamenCalendar.req.dto';
 import { RamenCalendarEntryResDTO } from './dto/res/ramenCalendarEntry.res.dto';
 
 @Controller('ramen-calendar')
@@ -36,6 +37,20 @@ export class RamenCalendarController {
     @Body() dto: createRamenCalendarReqDTO,
   ): Promise<RamenCalendarEntryResDTO> {
     return this.ramenCalendarService.createEntry(user, dto);
+  }
+
+  @ApiOperation({ summary: '라멘 캘린더 기록 수정' })
+  @ApiResponse({ status: 200, description: '기록 수정 성공', type: RamenCalendarEntryResDTO })
+  @ApiResponse({ status: 403, description: '본인 기록이 아닌 경우' })
+  @ApiResponse({ status: 404, description: '해당 id의 기록을 찾을 수 없는 경우' })
+  @ApiBearerAuth('accessToken')
+  @Patch(':id')
+  updateEntry(
+    @User() user: JwtPayload,
+    @Param('id') id: string,
+    @Body() dto: updateRamenCalendarReqDTO,
+  ): Promise<RamenCalendarEntryResDTO> {
+    return this.ramenCalendarService.updateEntry(user, id, dto);
   }
 
   @ApiOperation({ summary: '라멘 캘린더 기록 삭제' })

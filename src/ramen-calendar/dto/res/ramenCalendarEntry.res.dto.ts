@@ -16,6 +16,9 @@ export class RamenCalendarEntryResDTO {
   @ApiProperty({ description: '먹은 메뉴 목록', type: [String] })
   menus: string[];
 
+  @ApiProperty({ description: '지불 금액(원)', required: false, nullable: true, example: 12000 })
+  price?: number | null;
+
   @ApiProperty({ description: '생성일', required: false })
   createdAt?: string;
 
