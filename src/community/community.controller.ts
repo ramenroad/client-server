@@ -259,11 +259,12 @@ export class CommunityController {
     status: 500,
     description: '댓글 불러오기 실패',
   })
-  @ApiBearerAuth('accessToken')
+  @Public()
+  @UseGuards(OptionalAtGuard)
   @Get('/board/:boardId/comment')
   getComments(
-    @User() user: JwtPayload,
     @Param('boardId') boardId: string,
+    @User() user?: JwtPayload,
   ): Promise<CommentNodeResDTO[]> {
     return this.communityService.getComments(user, boardId)
   }

@@ -270,7 +270,7 @@ export class CommunityService {
         await this.boardModel.findByIdAndUpdate(boardId, { $inc: { commentCount: 1 } });
     }
 
-    async getComments(user: JwtPayload, boardId: string): Promise<CommentNodeResDTO[]> {
+    async getComments(user: JwtPayload | undefined, boardId: string): Promise<CommentNodeResDTO[]> {
 
         const allCommentsData = await this.commentModel.find({ boardId: boardId })
             .select('_id userId body likeCount likeUserIds parentCommentId depth createdAt updatedAt isDeleted deletedAt')
