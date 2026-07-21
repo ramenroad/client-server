@@ -211,18 +211,22 @@ export class SearchService {
   async getAutocomplete(query: string): Promise<GetAutocompleteResDto> {
 
     //라멘 매장 이름 검색 결과
-    //Legacy - 정규표현식을 이용한 검색
-    /* const ramenyaSearchResults = await this.ramenyaModel.aggregate([
+    // 매장 이름 중간 문자열 포함(contains) 검색 + 접두 일치 우선 정렬.
+    // 데이터가 1000건 미만이라 비앵커 정규식의 컬렉션 스캔 비용이 저렴하고, autocomplete용 Atlas $search 의존도 없앤다.
+    // 사용자 입력은 정규식 메타문자를 이스케이프해 오작동/ReDoS를 막는다.
+    const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+    const ramenyaSearchResults = await this.ramenyaModel.aggregate([
       {
         $match: {
-          name: { $regex: query, $options: 'i' }, // 전체 포함 검색
+          name: { $regex: escapedQuery, $options: 'i' }, // 전체 포함 검색
         },
       },
       {
         $addFields: {
           isPrefixMatch: {
             $cond: [
-              { $regexMatch: { input: '$name', regex: `^${query}`, options: 'i' } },
+              { $regexMatch: { input: '$name', regex: `^${escapedQuery}`, options: 'i' } },
               1,
               0,
             ],
@@ -242,9 +246,12 @@ export class SearchService {
           businessHours: 1,
         },
       },
-    ]); */
+    ]);
 
-    const ramenyaSearchResults = await this.ramenyaModel.aggregate([
+    // 이전 구현 — Atlas $search(autocomplete) + 접두(^) match.
+    // autocomplete는 edgeGram(토큰 앞부분)만 매칭하고 여기에 ^앵커까지 걸려 중간 문자열 검색이 불가했다.
+    // 위 정규식 방식으로 대체. 참고용으로 보존.
+    /* const ramenyaSearchResults = await this.ramenyaModel.aggregate([
       {
         $search: {
           index: 'geo',
@@ -267,7 +274,7 @@ export class SearchService {
           businessHours: 1,
         },
       },
-    ]); 
+    ]); */
     
     //관련 검색어 결과
     const keywordSearchResults = await this.ramenyaModel.aggregate([
